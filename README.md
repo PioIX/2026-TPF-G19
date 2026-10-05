@@ -13,24 +13,18 @@
 
 ### 3. Diseño inicial
 <Image><Image>
-Identidad visual: 
-Elemento
-Definición
-Paleta
-Verde cancha #0B3D2E, verde césped #1F8A4C, dorado #F5C542, celeste #75AADB, blanco hueso #F8F8F2, negro azulado #0E1A24, rojo error #E5484D
-Tipografías
-Bebas Neue (títulos y números), Poppins (texto)
-Logo
-Escudo con "XI" dorado y una pelota arriba, con "DRAFT XI" debajo. También una versión solo ícono para el favicon
-Componentes
-Botón principal verde (esquinas de 12 px), botón secundario con borde dorado, tarjetas en negro azulado con borde verde fino
+### Identidad visual: 
+#### Elemento, Definición, Paleta: Verde cancha #0B3D2E, verde césped #1F8A4C, dorado #F5C542, celeste #75AADB, blanco hueso #F8F8F2, negro azulado #0E1A24, rojo error #E5484D
+#### Tipografías: Bebas Neue (títulos y números), Poppins (texto)
+#### Logo: Escudo con "XI" dorado y una pelota arriba, con "DRAFT XI" debajo. También una versión solo ícono para el favicon
+#### Componentes: Botón principal verde (esquinas de 12 px), botón secundario con borde dorado, tarjetas en negro azulado con borde verde fino
+#### Pantallas: inicio, registro/login, configuración de partida, tablero del draft, resultado, ranking e historial y panel de administración.
 
-
-Pantallas: inicio, registro/login, configuración de partida, tablero del draft, resultado, ranking e historial y panel de administración.
-4. Modelo de datos
+### 4. Modelo de datos
 <Image><Image>
+
 ### 5. Planificación
-Tecnologías: React + Next.js · Node.js (Express) · MySQL · fetch (HTTP) · Socket.IO (WebSockets).
+#### Tecnologías: React + Next.js · Node.js (Express) · MySQL · fetch (HTTP) · Socket.IO (WebSockets).
 Objetivo
 Tareas
 Responsable
@@ -72,4 +66,4 @@ Pruebas, DER y README actualizados, ensayo de la demo
 Todos
 19/11
 
-Trabajo en GitHub: cada tarea es un Issue asignado, se usan ramas y Pull Requests, y todos los integrantes hacen commits. No se suben credenciales ni node_modules.
+#### Trabajo en GitHub: cada tarea es un Issue asignado, se usan ramas y Pull Requests, y todos los integrantes hacen commits. No se suben credenciales ni node_modules.
