@@ -54,11 +54,11 @@
 #### Marc
 #### 12/10
 #### Diseño y servidor base
-#### Wireframes, paleta, servidor Express, Socket.IO y useSocket.js
+#### Paleta, servidor Express, Socket.IO y useSocket.js
 #### Marc y García
 #### 14/10
 #### Usuarios y roles
-#### Registro, login, JWT, middleware admin, usuario para docentes
+#### Registro, login, middleware admin y usuario para docentes
 #### García y Filipelli
 #### 20/10
 #### Datos y administración
@@ -70,7 +70,7 @@
 #### Todos
 #### 23/10
 #### Juego individual
-#### Sorteo, tablero del draft, simulación
+#### Sorteo, tablero del draft y simulación
 #### Medina
 #### 30/10
 #### Partidas y ranking
@@ -83,7 +83,7 @@
 #### 06/11
 
 #### Cierre
-#### Pruebas, DER y README actualizados, ensayo de la demo
+#### Pruebas, DER y README actualizados y ensayo
 #### Todos
 #### 19/11
 
