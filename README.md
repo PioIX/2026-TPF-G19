@@ -22,7 +22,12 @@
 #### Fuera del alcance: carga completa de todos los Mundiales, apuestas o dinero real, app móvil nativa y chat.
 
 ## 3. Diseño inicial
-
+<img src="./images/img1.png" alt="Inicio">
+<img src="./images/img2.png" alt="Sesión">
+<img src="./images/img3.png" alt="Sorteo">
+<img src="./images/img4.png" alt="Alineación">
+<img src="./images/img5.png" alt="Partido">
+<img src="./images/img6.png" alt="Ranking">
 ### Identidad visual: 
 #### Elemento
 #### Definición
@@ -37,7 +42,7 @@
 #### Pantallas: inicio, registro/login, configuración de partida, tablero del draft, resultado, ranking e historial y panel de administración.
 
 ## 4. Modelo de datos
-
+<img src="./images/img7.png" alt="DER">
 ## 5. Planificación
 ### Tecnologías: React + Next.js · Node.js (Express) · MySQL · fetch (HTTP) · Socket.IO (WebSockets).
 #### Objetivo
