@@ -28,6 +28,7 @@
 <img src="./docs/img4.png" alt="Alineación">
 <img src="./docs/img5.png" alt="Partido">
 <img src="./docs/img6.png" alt="Ranking">
+
 ### Identidad visual: 
 #### Elemento
 #### Definición
@@ -43,6 +44,7 @@
 
 ## 4. Modelo de datos
 <img src="./docs/img7.png" alt="DER">
+
 ## 5. Planificación
 ### Tecnologías: React + Next.js · Node.js (Express) · MySQL · fetch (HTTP) · Socket.IO (WebSockets).
 #### Objetivo
