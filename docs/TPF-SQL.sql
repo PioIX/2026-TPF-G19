@@ -1,0 +1,241 @@
+	CREATE TABLE IF NOT EXISTS Usuarios (
+		id INT AUTO_INCREMENT,
+		nombre VARCHAR(255),
+		correo VARCHAR(255),
+		contraseña VARCHAR(255),
+		rol VARCHAR(255),
+		foto_url VARCHAR(255),
+		fecha_creacion DATETIME,
+		PRIMARY KEY (id)
+	);
+
+	CREATE TABLE IF NOT EXISTS Selecciones (
+		id INT AUTO_INCREMENT,
+		nombre VARCHAR(255),
+		codigo VARCHAR(255),
+		escudo_url VARCHAR(255),
+		PRIMARY KEY (id)
+	);
+
+	CREATE TABLE IF NOT EXISTS Mundiales (
+		id INT AUTO_INCREMENT,
+		anio INT,
+		pais_sede VARCHAR(255),
+		PRIMARY KEY (id)
+	);
+
+	CREATE TABLE IF NOT EXISTS Jugadores (
+		id INT AUTO_INCREMENT,
+		nombre VARCHAR(255),
+		PRIMARY KEY (id)
+	);
+
+	CREATE TABLE IF NOT EXISTS Plantillas (
+		id INT AUTO_INCREMENT,
+		seleccion_id INT,
+		mundial_id INT,
+		PRIMARY KEY (id),
+		FOREIGN KEY (seleccion_id) REFERENCES Selecciones(id),
+		FOREIGN KEY (mundial_id) REFERENCES Mundiales(id)
+	);
+
+	CREATE TABLE IF NOT EXISTS PlantillaJugadores (
+		id INT AUTO_INCREMENT,
+		plantilla_id INT,
+		jugador_id INT,
+		posicion VARCHAR(255),
+		valoracion INT,
+		PRIMARY KEY (id),
+		FOREIGN KEY (plantilla_id) REFERENCES Plantillas(id),
+		FOREIGN KEY (jugador_id) REFERENCES Jugadores(id)
+	);
+
+	CREATE TABLE IF NOT EXISTS Partidas (
+		id INT AUTO_INCREMENT,
+		usuario_id INT,
+		estado VARCHAR(255) DEFAULT 'en_curso',
+		plantilla_sorteada_id INT,
+		rival_plantilla_id INT,
+		fase VARCHAR(255),
+		goles_favor INT DEFAULT 0,
+		goles_contra INT DEFAULT 0,
+		puntaje INT DEFAULT 0,
+		fecha_creacion DATETIME,
+		fecha_fin DATETIME,
+		PRIMARY KEY (id),
+		FOREIGN KEY (usuario_id) REFERENCES Usuarios(id),
+		FOREIGN KEY (plantilla_sorteada_id) REFERENCES Plantillas(id),
+		FOREIGN KEY (rival_plantilla_id) REFERENCES Plantillas(id)
+	);
+
+	CREATE TABLE IF NOT EXISTS PartidaJugadores (
+		id INT AUTO_INCREMENT,
+		partida_id INT,
+		plantilla_jugador_id INT,
+		numero INT,
+		posicion VARCHAR(255),
+		goles INT DEFAULT 0,
+		PRIMARY KEY (id),
+		FOREIGN KEY (partida_id) REFERENCES Partidas(id),
+		FOREIGN KEY (plantilla_jugador_id) REFERENCES PlantillaJugadores(id)
+	);
+
+	INSERT INTO Usuarios (nombre, correo, contraseña, rol, foto_url, fecha_creacion) VALUES
+	('agustinp', 'amedina@pioix.edu.ar', 'eloso', 'admin', 'https://upload.wikimedia.org/wikipedia/commons/d/d0/Estadio_mas_monumental.jpg', '2026-10-08 07:00:00'),
+	('agustinf', 'afilipelli@pioix.edu.ar', 'velez', 'admin', 'https://velezsarsfield.com.ar/img/contenido/club/cd/estadio-05.jpg', '2026-10-08 07:00:00'),
+	('facundog', 'fngarcia@pioix.edu.ar', 'tanque', 'admin', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjPZZw_0s-VWNWsKm2C-Ju_iyVDbBhzqitv8fQlhA9oYdK-NXtWq681O7D&s=10', '2026-10-08 07:00:00'),
+	('bautistam', 'bmarc@pioix.edu.ar', 'marcus', 'admin', 'https://cdn.conmebol.com/wp-content/uploads/2014/08/bombonera-750x485.jpg', '2026-10-08 07:00:00');
+
+	INSERT INTO Selecciones (nombre, codigo, escudo_url) VALUES
+	('Argentina', 'ARG', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxnx7NOQWMFVlUihubI6vpoHj4ympMSwiGRjRViPf4sw&s=10'),
+	('Brasil', 'BRA', 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/Brazilian_Football_Confederation_logo.svg/500px-Brazilian_Football_Confederation_logo.svg.png?utm_source=es.wikipedia.org&utm_campaign=index&utm_content=thumbnail'),
+	('Alemania', 'GER', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXAl9t-rK7sd3KN8494U8WGFBU-cD3eMm9poJBWBQOpg&s=10'),
+	('Francia', 'FRA', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4rs2OOc8MxT8ixU3zdLFSEeV0tVmGl7d43w0APOIoBA&s=10'),
+	('Italia', 'ITA', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-3LnFDC0Hsu6atha9OenE7bOK1jS5JR9v5jIXfF1XEw&s=10'),
+	('Uruguay', 'URU', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9zQprX8D_L39O5zNQFLRHftZs_Bckhxdh_IfBw5n8wg&s=10'),
+	('Países Bajos', 'HOL', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIYTYbPzvjnlLc8Yk1lb1Z2ndeldVNd-rdvl4h8Bi4Ng&s=10'),
+	('España', 'ESP', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVXYHnG0XmjlckW1GrObsPnSXHg7tZP55qqlQORPwq4w&s=10'),
+	('Inglaterra', 'ING', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWLc9wq2qAy5h7TDQ43Tx48BKf-6uRFjsYDXjc7SdJGQ&s=10'),
+	('Portugal', 'POR', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQI0SnaR73lFhnk3IHR_-xzCci1AJEgYJ9ENVmru9Jy9w&s=10'),
+	('Hungría', 'HUN', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgmgp-IN5pcnvRzLUsfrnWANFbX801NFgv-TUkLOorzw&s=10'),
+	('México', 'MEX', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQClckO93e--dWFr3h7cDaCbmPD7jlTZJJDJuaAWuL5WQ&s=10'),
+	('Polonia', 'POL', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbeNSdpBxZIQBJ6Jf-EdfRryaNtJYOevBFUYDdRgDPPg&s=10'),
+	('República Checa', 'CHE', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAI8jQLIe5DjVgWMt6hcAgxoStQrEhqJyU6AFY51jyhQ&s=10'),
+	('Colombia', 'COL', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7mq__JFh1Tk3pniyNOOJOMlchxmzUYfGvIW1nvi7M5w&s=10'),
+	('Corea del Sur', 'COR', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRi21S-OI5iQlOtDGCzl-lg5LoLfwAehXjn7Hgbu-L1eg&s=10'),
+	('Costa de Marfil', 'COS', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRh0Npvw53ZsPZi1XKtAABht2tZFQX-6s6z_KYKKN7OMQ&s=10'),
+	('Bulgaria', 'BUL', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSS_P0QtDkQNSWXJiA6p2HeSPfNSBKUwWQ6F4TirXa6dQ&s=10'),
+	('Gales', 'GAL', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKPlo7B7fpbG0RMP69Jyx-0eUDFQMCyBQ1sKCPUb-GnQ&s=10'),
+	('Chile', 'CHI', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1_q50Ed9EDNsNlDJkvYwojPjIEh6NwAON5UGK35qqLA&s=10'),
+	('Dinamarca', 'DIN', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1hjF4xZTxzkGtdDIIPLCKxSf2JAYCo5l4w2yQ_qQPog&s=10'),
+	('Noruega', 'NOR', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQB2IIdcQyT3Eva0U6TVmW79tuA4xPC4qbhGV0jPnAPHQ&s'),
+	('Japón', 'JAP', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_iQv08gwnSt2XXidMYkJN2ewjHKwRRqhIDUS--6OMUg&s');
+
+	INSERT INTO Mundiales (anio, pais_sede) VALUES
+	(2026, 'EEUU'),
+	(2022, 'Catar'),
+	(2018, 'Rusia'),
+	(2014, 'Brasil'),
+	(2010, 'Sudáfrica'),
+	(2006, 'Alemania'),
+	(2002, 'Corea'),
+	(1998, 'Francia'),
+	(1994, 'EEUU'),
+	(1990, 'Italia'),
+	(1986, 'México'),
+	(1982, 'España'),
+	(1978, 'Argentina'),
+	(1974, 'Alemania'),
+	(1970, 'México'),
+	(1966, 'Inglaterra'),
+	(1962, 'Chile'),
+	(1958, 'Suecia'),
+	(1954, 'Suiza'),
+	(1950, 'Brasil'),
+	(1938, 'Francia'),
+	(1934, 'Italia'),
+	(1930, 'Uruguay');
+
+	INSERT INTO Jugadores (nombre) VALUES
+	('Diego Maradona');
+	//FALTA AÑADIR//
+	INSERT INTO Plantillas (seleccion_id, mundial_id) VALUES
+	(1, 1),
+	(1, 2),	
+	(1, 3),
+	(1, 4),
+	(1, 6),
+	(1, 9),
+	(1, 10),
+	(1, 11),
+	(1, 13),
+	(1, 16),
+	(2, 1),
+	(2, 2),
+	(2, 3),
+	(2, 4),
+	(2, 6),
+	(2, 7),
+	(2, 8),
+	(2, 9),
+	(2, 10),
+	(2, 12),
+	(2, 15),
+	(2, 17),
+	(2, 18),
+	(3, 2),
+	(3, 3),
+	(3, 4),
+	(3, 6),
+	(3, 7),
+	(3, 10),
+	(3, 11),
+	(3, 14),
+	(4, 1),
+	(4, 2),
+	(4, 3),
+	(4, 4),
+	(4, 6),
+	(4, 8),
+	(4, 21),
+	(5, 4),
+	(5, 6),
+	(5, 9),
+	(5, 12),
+	(5, 14),
+	(5, 15),
+	(6, 1),
+	(6, 2),
+	(6, 3),
+	(6, 5),
+	(6, 20),
+	(7, 1),
+	(7, 2),
+	(7, 4),
+	(7, 5),
+	(7, 10),
+	(7, 14),
+	(8, 1),
+	(8, 2),
+	(8, 4),
+	(8, 5),
+	(8, 12),
+	(9, 1),
+	(9, 2),
+	(9, 3),
+	(9, 5),
+	(9, 8),
+	(9, 16),
+	(10, 1),
+	(10, 3),
+	(10, 4),
+	(10, 6),
+	(10, 7),
+	(10, 16),
+	(11, 11),
+	(11, 19),
+	(12, 2),
+	(12, 11),
+	(13, 2),
+	(13, 12),
+	(14, 6),
+	(14, 17),
+	(15, 4),
+	(15, 9),
+	(16, 3),
+	(16, 7),
+	(17, 4),
+	(17, 6),
+	(18, 8),
+	(18, 9),
+	(19, 2),
+	(19, 18),
+	(20, 12),
+	(20, 17),
+	(21, 2),
+	(21, 8),
+	(22, 8),
+	(22, 9),
+	(23, 2),
+	(23, 4);
+
