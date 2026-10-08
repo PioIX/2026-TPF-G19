@@ -18,7 +18,7 @@
 #### Simulación del partido en el backend (ataque, defensa y azar) con resultado y puntaje.
 #### Historial de partidas y ranking general.
 #### Panel de administración con CRUD de selecciones, Mundiales, plantillas y jugadores.
-#### Producto final: web responsive, identidad visual coherente, datos en MySQL, con una carga inicial de unas 8 a 12 selecciones, 2 o 3 Mundiales y +300 jugadores.
+#### Producto final: web responsive, identidad visual coherente, datos en MySQL, con una carga inicial de 22 selecciones, depende de la grandeza de la selección habrá más o menos mundiales y +300 jugadores.
 #### Fuera del alcance: carga completa de todos los Mundiales, apuestas o dinero real, app móvil nativa y chat.
 
 ## 3. Diseño inicial
