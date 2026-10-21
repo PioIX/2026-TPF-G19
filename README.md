@@ -18,7 +18,7 @@
 #### Simulación del partido en el backend (ataque, defensa y azar) con resultado y puntaje.
 #### Historial de partidas y ranking general.
 #### Panel de administración con CRUD de selecciones, Mundiales, plantillas y jugadores.
-#### Producto final: web responsive, identidad visual coherente, datos en MySQL, con una carga inicial de 22 selecciones, depende de la grandeza de la selección habrá más o menos mundiales y +300 jugadores.
+#### Producto final: web responsive, identidad visual coherente, datos en MySQL, con una carga inicial de 23 selecciones, depende de la grandeza de la selección habrá más o menos mundiales y +300 jugadores.
 #### Fuera del alcance: carga completa de todos los Mundiales, apuestas o dinero real, app móvil nativa y chat.
 
 ## 3. Diseño inicial
@@ -91,3 +91,18 @@
 
 #### Trabajo en GitHub: cada tarea es un Issue asignado, se usan ramas y Pull Requests, y todos los integrantes hacen commits. No se suben credenciales ni node_modules.
 
+## 6. Cómo ejecutar el proyecto
+
+### Base de datos: 
+#### `mysql -u root -p < docs/script.sql` (crea la base `proyecto_final_g19`, las tablas y la carga inicial de selecciones, mundiales, plantillas y jugadores).
+
+### Backend: 
+#### `cd backend` → copiar `.env.example` como `.env` y completar los datos → `npm install` → `npm run dev` (puerto 4000).
+
+### Usuario administrador:
+#### `npm run crear-admin -- "Nombre" correo contraseña` (desde `backend/`). Las contraseñas se guardan con bcrypt, por eso no vienen en el script SQL.
+
+### Frontend:
+#### `cd frontend` → copiar `.env.example` como `.env.local` → `npm install` → `npm run dev` (puerto 3000).
+
+#### Usuario para docentes: crearlo con el paso 3 y anotar acá las credenciales entregadas: `____________`.
