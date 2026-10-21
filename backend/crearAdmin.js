@@ -8,10 +8,10 @@ if (!nombre || !correo || !contrasenia) {
 }
 const hash = await bcrypt.hash(password, 10);
 await query(
-  "INSERT INTO usuarios (nombre, email, password, rol) VALUES (?, ?, ?, 'admin')",
-  [nombre, email.toLowerCase(), hash]
+  "INSERT INTO usuarios (nombre, correo, contrasenia, rol) VALUES (?, ?, ?, 'admin')",
+  [nombre, correo.toLowerCase(), hash]
 );
-console.log("Administrador creado:", email);
+console.log("Administrador creado:", correo);
 process.exit(0);
 try {
   const hash = await bcrypt.hash(contrasenia, 10);

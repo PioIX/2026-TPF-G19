@@ -18,7 +18,7 @@ app.use(express.json());
 
 app.post("/registro", async (req, res) => {
   try {
-    const { nombre, email, contrasenia } = req.body;
+    const { nombre, correo, contrasenia } = req.body;
 
         if (!nombre || !correo || !contrasenia)  {
       return res.status(400).json({ error: "Completá todos los campos" });
@@ -58,7 +58,7 @@ app.post("/login", async (req, res) => {
       usuario: {
         id: usuario.id,
         nombre: usuario.nombre,
-        email: usuario.email,
+        correo: usuario.correo,
         rol: usuario.rol,
       },
     });
