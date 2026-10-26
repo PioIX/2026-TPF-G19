@@ -2,33 +2,36 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import styles from "./page.module.css";
 
 export default function Home() {
   const router = useRouter();
   const [usuario, setUsuario] = useState(null);
 
   useEffect(() => {
-    // si no hay usuario guardado, mandamos al login
-    const guardado = localStorage.getItem("usuario");
-    if (!guardado) {
+    try {
+      const guardado = JSON.parse(localStorage.getItem("usuario"));
+      if (guardado) setUsuario(guardado);
+      else router.replace("/login");
+    } catch {
       router.replace("/login");
-      return;
     }
-    setUsuario(JSON.parse(guardado));
   }, [router]);
 
-  function cerrarSesion() {
+  function salir() {
     localStorage.removeItem("usuario");
     router.replace("/login");
   }
 
-  if (!usuario) return <p style={{ padding: 24 }}>Cargando...</p>;
+  if (!usuario) return <p className={styles.cargando}>Cargando...</p>;
 
   return (
-    <main style={{ padding: 24 }}>
-      <h1>Hola, {usuario.nombre} 👋</h1>
-      <p>Rol: {usuario.rol}</p>
-      <button onClick={cerrarSesion}>Cerrar sesión</button>
+    <main className={styles.principal}>
+      <h1 className={styles.titulo}>Hola, {usuario.nombre}</h1>
+      <p className={styles.subtitulo}>Armá tu once ideal con plantillas históricas de los Mundiales.</p>
+      <button className="btn" onClick={salir}>
+        Salir
+      </button>
     </main>
   );
 }
