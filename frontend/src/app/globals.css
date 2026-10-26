@@ -1,34 +1,12 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-html {
-  height: 100%;
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --cancha: #0b3d2e;
+  --cesped: #1f8a4c;
+  --dorado: #f5c542;
+  --celeste: #75aadb;
+  --hueso: #f8f8f2;
+  --negro: #0e1a24;
+  --error: #e5484d;
+  --radio: 12px;
 }
 
 * {
@@ -37,13 +15,79 @@ body {
   margin: 0;
 }
 
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  color: var(--hueso);
+  background: var(--cancha);
+  font-family: var(--font-texto), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-titulo), Impact, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
 a {
-  color: inherit;
+  color: var(--celeste);
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+a:hover {
+  text-decoration: underline;
+}
+
+.btn {
+  background: var(--cesped);
+  color: var(--hueso);
+  border: 2px solid var(--cesped);
+  border-radius: var(--radio);
+  padding: 10px 18px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn:hover:not(:disabled) {
+  filter: brightness(1.12);
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn.secundario {
+  background: transparent;
+  border-color: var(--dorado);
+  color: var(--dorado);
+}
+
+.btn.peligro {
+  background: transparent;
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.btn.chico {
+  padding: 5px 10px;
+  font-size: 0.8rem;
+}
+
+.tarjeta {
+  background: var(--negro);
+  border: 1px solid var(--cesped);
+  border-radius: var(--radio);
+  padding: 20px;
 }
