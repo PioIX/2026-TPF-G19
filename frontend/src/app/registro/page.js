@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import styles from "../auth.module.css";
 
-const API = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export default function Registro() {
   const router = useRouter();
@@ -28,23 +29,20 @@ export default function Registro() {
 
     setCargando(true);
     try {
-      const res = await fetch(`${API}/registro`, {
+      const res = await fetch(`${API_URL}/registro`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre: form.nombre,
-          email: form.email,
-          password: form.password,
-        }),
+        body: JSON.stringify({ nombre: form.nombre, email: form.email, password: form.password }),
       });
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "No se pudo registrar");
-      } else {
-        setOk("Registro exitoso. Redirigiendo al login...");
-        setTimeout(() => router.push("/login"), 1200);
+        setError(data.error || "Ocurrió un error");
+        return;
       }
+
+      setOk("Registro exitoso. Redirigiendo al login...");
+      setTimeout(() => router.push("/login"), 1200);
     } catch {
       setError("No se pudo conectar con el servidor");
     } finally {
@@ -55,13 +53,14 @@ export default function Registro() {
   return (
     <div className={styles.contenedor}>
       <form className={styles.tarjeta} onSubmit={enviar}>
+        <Image className={styles.logo} src="/logo.svg" alt="Draft XI" width={64} height={75} />
         <h1 className={styles.titulo}>Crear cuenta</h1>
 
         {error && <div className={styles.error}>{error}</div>}
         {ok && <div className={styles.ok}>{ok}</div>}
 
         <div className={styles.campo}>
-          <label htmlFor="nombre">Nombre</label>
+          <label htmlFor="nombre">Nombre de usuario</label>
           <input id="nombre" name="nombre" value={form.nombre} onChange={cambiar} required />
         </div>
         <div className={styles.campo}>
