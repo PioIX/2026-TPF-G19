@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import styles from "../auth.module.css";
 
-const API = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export default function Login() {
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function Login() {
     setCargando(true);
 
     try {
-      const res = await fetch(`${API}/login`, {
+      const res = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -29,11 +30,12 @@ export default function Login() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "No se pudo iniciar sesión");
-      } else {
-        localStorage.setItem("usuario", JSON.stringify(data.usuario));
-        router.push("/");
+        setError(data.error || "Ocurrió un error");
+        return;
       }
+
+      localStorage.setItem("usuario", JSON.stringify(data.usuario));
+      router.push("/");
     } catch {
       setError("No se pudo conectar con el servidor");
     } finally {
@@ -44,6 +46,7 @@ export default function Login() {
   return (
     <div className={styles.contenedor}>
       <form className={styles.tarjeta} onSubmit={enviar}>
+        <Image className={styles.logo} src="/logo.svg" alt="Draft XI" width={64} height={75} />
         <h1 className={styles.titulo}>Iniciar sesión</h1>
 
         {error && <div className={styles.error}>{error}</div>}
