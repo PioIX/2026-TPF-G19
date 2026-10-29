@@ -1,15 +1,30 @@
 import express from "express";
 import cors from "cors";
+import { createServer } from "http";
+import { Server } from "socket.io";
 import dotenv from "dotenv";
 import { query } from "./modulos/mysql.js";
+import rutasAdmin from "./routes/admin.js";
+import rutasJuego from "./routes/juego.js";
 
 dotenv.config();
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
+const ORIGENES = (process.env.FRONTEND_URL || "http://localhost:3000").split(",");
 
 const app = express();
-app.use(cors({ origin: FRONTEND_URL }));
+app.use(cors({ origin: ORIGENES }));
 app.use(express.json());
+
+const server = createServer(app);
+const io = new Server(server, { cors: { origin: ORIGENES } });
+app.set("io", io);
+
+io.on("connection", (socket) => {
+  io.emit("usuarios:conectados", io.of("/").sockets.size);
+  socket.on("disconnect", () => {
+    io.emit("usuarios:conectados", io.of("/").sockets.size);
+  });
+});
 
 
 

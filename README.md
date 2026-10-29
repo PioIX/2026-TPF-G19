@@ -100,7 +100,7 @@
 #### `cd backend` → copiar `.env.example` como `.env` y completar los datos → `npm install` → `npm run dev` (puerto 4000).
 
 ### Usuario administrador:
-#### `npm run crear-admin -- "Nombre" correo contraseña` (desde `backend/`). Las contraseñas se guardan con bcrypt, por eso no vienen en el script SQL.
+#### `npm run crear-admin -- "Nombre" correo contraseña` (desde `backend/`). El script SQL ya incluye cuatro administradores; este comando sirve para crear otro.
 
 ### Frontend:
 #### `cd frontend` → copiar `.env.example` como `.env.local` → `npm install` → `npm run dev` (puerto 3000).
