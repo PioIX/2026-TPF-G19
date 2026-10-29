@@ -192,3 +192,88 @@ router.post("/plantillas", async (req, res) => {
     responderError(res, err);
   }
 });
+
+router.delete("/plantillas/:id", async (req, res) => {
+  try {
+    const enUso = await query(
+      "SELECT id FROM Partidas WHERE plantilla_sorteada_id = ? OR rival_plantilla_id = ? LIMIT 1",
+      [req.params.id, req.params.id]
+    );
+    if (enUso.length > 0) {
+      return res.status(409).json({ error: "No se puede eliminar: hay partidas que usan esta plantilla" });
+    }
+    await query("DELETE FROM PlantillaJugadores WHERE plantilla_id = ?", [req.params.id]);
+    await query("DELETE FROM Plantillas WHERE id = ?", [req.params.id]);
+    res.json({ mensaje: "Plantilla eliminada" });
+  } catch (err) {
+    responderError(res, err);
+  }
+});
+
+/* ---------- Jugadores de una plantilla ---------- */
+router.get("/plantillas/:id/jugadores", async (req, res) => {
+  try {
+    res.json(
+      await query(
+        `SELECT PlantillaJugadores.id, PlantillaJugadores.jugador_id, Jugadores.nombre,
+                PlantillaJugadores.posicion, PlantillaJugadores.valoracion
+         FROM PlantillaJugadores
+         JOIN Jugadores ON Jugadores.id = PlantillaJugadores.jugador_id
+         WHERE PlantillaJugadores.plantilla_id = ?
+         ORDER BY FIELD(PlantillaJugadores.posicion, 'POR', 'DEF', 'MED', 'DEL'), PlantillaJugadores.valoracion DESC`,
+        [req.params.id]
+      )
+    );
+  } catch (err) {
+    responderError(res, err);
+  }
+});
+
+router.post("/plantillas/:id/jugadores", async (req, res) => {
+  try {
+    const { jugador_id, posicion, valoracion } = req.body;
+    if (!jugador_id || !POSICIONES.includes(posicion) || !(valoracion >= 1 && valoracion <= 99)) {
+      return res.status(400).json({ error: "Jugador, posición (POR/DEF/MED/DEL) y valoración (1-99) son obligatorios" });
+    }
+    const existe = await query(
+      "SELECT id FROM PlantillaJugadores WHERE plantilla_id = ? AND jugador_id = ?",
+      [req.params.id, jugador_id]
+    );
+    if (existe.length > 0) return res.status(409).json({ error: "Ese jugador ya está en la plantilla" });
+    const resultado = await query(
+      "INSERT INTO PlantillaJugadores (plantilla_id, jugador_id, posicion, valoracion) VALUES (?, ?, ?, ?)",
+      [req.params.id, jugador_id, posicion, Number(valoracion)]
+    );
+    res.status(201).json({ id: resultado.insertId });
+  } catch (err) {
+    responderError(res, err);
+  }
+});
+
+router.put("/plantilla-jugadores/:id", async (req, res) => {
+  try {
+    const { posicion, valoracion } = req.body;
+    if (!POSICIONES.includes(posicion) || !(valoracion >= 1 && valoracion <= 99)) {
+      return res.status(400).json({ error: "Posición o valoración inválida" });
+    }
+    await query("UPDATE PlantillaJugadores SET posicion = ?, valoracion = ? WHERE id = ?", [
+      posicion,
+      Number(valoracion),
+      req.params.id,
+    ]);
+    res.json({ mensaje: "Actualizado" });
+  } catch (err) {
+    responderError(res, err);
+  }
+});
+
+router.delete("/plantilla-jugadores/:id", async (req, res) => {
+  try {
+    await query("DELETE FROM PlantillaJugadores WHERE id = ?", [req.params.id]);
+    res.json({ mensaje: "Jugador quitado de la plantilla" });
+  } catch (err) {
+    responderError(res, err);
+  }
+});
+
+export default router;
