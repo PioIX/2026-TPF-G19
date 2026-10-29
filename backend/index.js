@@ -74,7 +74,7 @@ app.post("/login", async (req, res) => {
     const filas = await query("SELECT * FROM Usuarios WHERE correo = ?", [correo]);
     const usuario = filas[0];
 
-    if (!usuario || !verificarContrasenia(contrasenia, usuario.contrasenia)) {
+    if (!usuario || usuario.contrasenia !== contrasenia) {
       return res.status(401).json({ error: "Email o contraseña incorrectos" });
     }
 
@@ -87,5 +87,8 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.use("/admin", rutasAdmin);
+app.use(rutasJuego);
+
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`Backend escuchando en http://localhost:${PORT}`));
+server.listen(PORT, () => console.log(`Backend escuchando en http://localhost:${PORT}`));
