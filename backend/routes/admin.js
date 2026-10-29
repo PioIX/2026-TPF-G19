@@ -154,3 +154,41 @@ router.delete("/jugadores/:id", async (req, res) => {
     responderError(res, err);
   }
 });
+
+/* ---------- Plantillas (selección + mundial) ---------- */
+router.get("/plantillas", async (req, res) => {
+  try {
+    res.json(
+      await query(
+        `SELECT Plantillas.id, Plantillas.seleccion_id, Plantillas.mundial_id,
+                Selecciones.nombre AS seleccion, Mundiales.anio,
+                (SELECT COUNT(*) FROM PlantillaJugadores WHERE PlantillaJugadores.plantilla_id = Plantillas.id) AS cantidad
+         FROM Plantillas
+         JOIN Selecciones ON Selecciones.id = Plantillas.seleccion_id
+         JOIN Mundiales ON Mundiales.id = Plantillas.mundial_id
+         ORDER BY Selecciones.nombre, Mundiales.anio DESC`
+      )
+    );
+  } catch (err) {
+    responderError(res, err);
+  }
+});
+
+router.post("/plantillas", async (req, res) => {
+  try {
+    const { seleccion_id, mundial_id } = req.body;
+    if (!seleccion_id || !mundial_id) return res.status(400).json({ error: "Elegí selección y mundial" });
+    const existe = await query("SELECT id FROM Plantillas WHERE seleccion_id = ? AND mundial_id = ?", [
+      seleccion_id,
+      mundial_id,
+    ]);
+    if (existe.length > 0) return res.status(409).json({ error: "Esa plantilla ya existe" });
+    const resultado = await query("INSERT INTO Plantillas (seleccion_id, mundial_id) VALUES (?, ?)", [
+      seleccion_id,
+      mundial_id,
+    ]);
+    res.status(201).json({ id: resultado.insertId });
+  } catch (err) {
+    responderError(res, err);
+  }
+});
