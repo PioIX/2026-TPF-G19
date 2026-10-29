@@ -69,3 +69,47 @@ router.delete("/selecciones/:id", async (req, res) => {
     responderError(res, err);
   }
 });
+
+/* ---------- Mundiales ---------- */
+router.get("/mundiales", async (req, res) => {
+  try {
+    res.json(await query("SELECT * FROM Mundiales ORDER BY anio DESC"));
+  } catch (err) {
+    responderError(res, err);
+  }
+});
+
+router.post("/mundiales", async (req, res) => {
+  try {
+    const { anio, pais_sede } = req.body;
+    if (!anio || !pais_sede) return res.status(400).json({ error: "Año y sede son obligatorios" });
+    const resultado = await query("INSERT INTO Mundiales (anio, pais_sede) VALUES (?, ?)", [Number(anio), pais_sede]);
+    res.status(201).json({ id: resultado.insertId });
+  } catch (err) {
+    responderError(res, err);
+  }
+});
+
+router.put("/mundiales/:id", async (req, res) => {
+  try {
+    const { anio, pais_sede } = req.body;
+    if (!anio || !pais_sede) return res.status(400).json({ error: "Año y sede son obligatorios" });
+    await query("UPDATE Mundiales SET anio = ?, pais_sede = ? WHERE id = ?", [
+      Number(anio),
+      pais_sede,
+      req.params.id,
+    ]);
+    res.json({ mensaje: "Mundial actualizado" });
+  } catch (err) {
+    responderError(res, err);
+  }
+});
+
+router.delete("/mundiales/:id", async (req, res) => {
+  try {
+    await query("DELETE FROM Mundiales WHERE id = ?", [req.params.id]);
+    res.json({ mensaje: "Mundial eliminado" });
+  } catch (err) {
+    responderError(res, err);
+  }
+});
