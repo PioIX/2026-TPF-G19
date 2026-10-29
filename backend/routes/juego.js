@@ -96,3 +96,92 @@ async function armarEstado(partidaId) {
 
   return { partida, formacion: FORMACION, equipo, sorteo };
 }
+
+// Partida en curso del usuario (si tiene una)
+router.get("/partidas/actual", identificarUsuario, async (req, res) => {
+  try {
+    const filas = await query(
+      "SELECT id FROM Partidas WHERE usuario_id = ? AND estado = 'en_curso' ORDER BY id DESC LIMIT 1",
+      [req.usuario.id]
+    );
+    if (filas.length === 0) {
+      return res.json({ partida: null });
+    }
+    res.json(await armarEstado(filas[0].id));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error del servidor" });
+  }
+});
+
+// Nueva partida: abandona la anterior y hace el primer sorteo
+router.post("/partidas", identificarUsuario, async (req, res) => {
+  try {
+    await query(
+      "UPDATE Partidas SET estado = 'abandonada', fecha_fin = NOW() WHERE usuario_id = ? AND estado = 'en_curso'",
+      [req.usuario.id]
+    );
+    const resultado = await query(
+      "INSERT INTO Partidas (usuario_id, estado, fecha_creacion) VALUES (?, 'en_curso', NOW())",
+      [req.usuario.id]
+    );
+    await sortear(resultado.insertId);
+    res.status(201).json(await armarEstado(resultado.insertId));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error del servidor" });
+  }
+});
+
+// Elegir un jugador del sorteo para un puesto de la formación
+router.post("/partidas/:id/elegir", identificarUsuario, async (req, res) => {
+  try {
+    const partidaId = Number(req.params.id);
+    const plantillaJugadorId = req.body.plantilla_jugador_id;
+    const numeroPuesto = Number(req.body.numero);
+
+    const partidas = await query(
+      "SELECT * FROM Partidas WHERE id = ? AND usuario_id = ? AND estado = 'en_curso'",
+      [partidaId, req.usuario.id]
+    );
+    if (partidas.length === 0) {
+      return res.status(404).json({ error: "Partida no encontrada" });
+    }
+
+    // El jugador tiene que ser de la plantilla sorteada
+    const jugadores = await query("SELECT * FROM PlantillaJugadores WHERE id = ? AND plantilla_id = ?", [
+      plantillaJugadorId,
+      partidas[0].plantilla_sorteada_id,
+    ]);
+    if (jugadores.length === 0) {
+      return res.status(400).json({ error: "Ese jugador no está en el sorteo" });
+    }
+    const jugador = jugadores[0];
+
+    const puesto = FORMACION.find((item) => item.numero === numeroPuesto);
+    if (!puesto) {
+      return res.status(400).json({ error: "Puesto inválido" });
+    }
+    if (puesto.posicion !== jugador.posicion) {
+      return res.status(400).json({ error: "Ese jugador no juega en ese puesto" });
+    }
+
+    const equipo = await equipoDePartida(partidaId);
+    if (equipo.some((elegido) => elegido.numero === puesto.numero)) {
+      return res.status(409).json({ error: "Ese puesto ya está ocupado" });
+    }
+    if (equipo.some((elegido) => elegido.jugador_id === jugador.jugador_id)) {
+      return res.status(409).json({ error: "Ese jugador ya está en tu equipo" });
+    }
+
+    await query(
+      "INSERT INTO PartidaJugadores (partida_id, plantilla_jugador_id, numero, posicion) VALUES (?, ?, ?, ?)",
+      [partidaId, jugador.id, puesto.numero, puesto.posicion]
+    );
+    await sortear(partidaId);
+    res.json(await armarEstado(partidaId));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error del servidor" });
+  }
+});
