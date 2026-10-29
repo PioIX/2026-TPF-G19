@@ -237,3 +237,102 @@ router.post("/partidas/:id/simular", identificarUsuario, async (req, res) => {
         const id = goleador.plantilla_jugador_id;
         golesPorJugador[id] = (golesPorJugador[id] || 0) + 1;
       });
+
+      rondas.push({
+        fase: fase,
+        rival: { id: rival.id, seleccion: rival.seleccion, anio: rival.anio },
+        golesFavor: partido.golesFavor,
+        golesContra: partido.golesContra,
+        penales: partido.penales,
+        gana: partido.gana,
+        goleadoresFavor: partido.goleadoresFavor.map((goleador) => goleador.nombre),
+        goleadoresContra: partido.goleadoresContra.map((goleador) => goleador.nombre),
+      });
+
+      if (!partido.gana) break;
+    }
+
+    const ultimaRonda = rondas[rondas.length - 1];
+    const campeon = rondas.length === FASES.length && ultimaRonda.gana;
+    const faseFinal = campeon ? "Campeón" : ultimaRonda.fase;
+    const puntaje = calcularPuntaje(rondas);
+
+    // Guardamos los goles de cada jugador y cerramos la partida
+    for (const plantillaJugadorId of Object.keys(golesPorJugador)) {
+      await query(
+        "UPDATE PartidaJugadores SET goles = ? WHERE partida_id = ? AND plantilla_jugador_id = ?",
+        [golesPorJugador[plantillaJugadorId], partidaId, plantillaJugadorId]
+      );
+    }
+    await query(
+      `UPDATE Partidas SET estado = 'finalizada', rival_plantilla_id = ?, fase = ?,
+       goles_favor = ?, goles_contra = ?, puntaje = ?, fecha_fin = NOW() WHERE id = ?`,
+      [ultimaRonda.rival.id, faseFinal, ultimaRonda.golesFavor, ultimaRonda.golesContra, puntaje, partidaId]
+    );
+
+    // WebSocket: le avisa a todos los conectados que el ranking cambió
+    req.app.get("io").emit("ranking:actualizado", {
+      nombre: req.usuario.nombre,
+      puntaje: puntaje,
+      fase: faseFinal,
+    });
+
+    res.json({ rondas, puntaje, fase: faseFinal, campeon });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error del servidor" });
+  }
+});
+
+router.post("/partidas/:id/abandonar", identificarUsuario, async (req, res) => {
+  try {
+    await query(
+      "UPDATE Partidas SET estado = 'abandonada', fecha_fin = NOW() WHERE id = ? AND usuario_id = ? AND estado = 'en_curso'",
+      [Number(req.params.id), req.usuario.id]
+    );
+    res.json({ mensaje: "Partida abandonada" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error del servidor" });
+  }
+});
+
+router.get("/ranking", identificarUsuario, async (req, res) => {
+  try {
+    const filas = await query(
+      `SELECT Partidas.id, Usuarios.nombre, Partidas.puntaje, Partidas.fase, Partidas.fecha_fin
+       FROM Partidas
+       JOIN Usuarios ON Usuarios.id = Partidas.usuario_id
+       WHERE Partidas.estado = 'finalizada'
+       ORDER BY Partidas.puntaje DESC, Partidas.fecha_fin ASC
+       LIMIT 10`
+    );
+    res.json(filas);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error del servidor" });
+  }
+});
+
+router.get("/historial", identificarUsuario, async (req, res) => {
+  try {
+    const filas = await query(
+      `SELECT Partidas.id, Partidas.puntaje, Partidas.fase, Partidas.goles_favor, Partidas.goles_contra,
+              Partidas.fecha_fin, Selecciones.nombre AS rival, Mundiales.anio AS rival_anio
+       FROM Partidas
+       LEFT JOIN Plantillas ON Plantillas.id = Partidas.rival_plantilla_id
+       LEFT JOIN Selecciones ON Selecciones.id = Plantillas.seleccion_id
+       LEFT JOIN Mundiales ON Mundiales.id = Plantillas.mundial_id
+       WHERE Partidas.usuario_id = ? AND Partidas.estado = 'finalizada'
+       ORDER BY Partidas.fecha_fin DESC
+       LIMIT 20`,
+      [req.usuario.id]
+    );
+    res.json(filas);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error del servidor" });
+  }
+});
+
+export default router;
