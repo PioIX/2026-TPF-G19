@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import crypto from "crypto";
 import dotenv from "dotenv";
 import { query } from "./modulos/mysql.js";
 
@@ -12,19 +11,7 @@ const app = express();
 app.use(cors({ origin: FRONTEND_URL }));
 app.use(express.json());
 
-function hashContrasenia(contrasenia) {
-  const sal = crypto.randomBytes(16).toString("hex");
-  const hash = crypto.scryptSync(contrasenia, sal, 64).toString("hex");
-  return `${sal}:${hash}`;
-}
 
-function verificarContrasenia(contrasenia, guardada) {
-  const [sal, hash] = String(guardada || "").split(":");
-  if (!sal || !hash) return false;
-  const esperado = Buffer.from(hash, "hex");
-  const calculado = crypto.scryptSync(contrasenia, sal, esperado.length);
-  return crypto.timingSafeEqual(calculado, esperado);
-}
 
 app.post("/registro", async (req, res) => {
   try {
