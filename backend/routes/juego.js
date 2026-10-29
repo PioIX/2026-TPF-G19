@@ -185,3 +185,55 @@ router.post("/partidas/:id/elegir", identificarUsuario, async (req, res) => {
     res.status(500).json({ error: "Error del servidor" });
   }
 });
+
+// Simula el torneo completo (octavos a final) y guarda el puntaje
+router.post("/partidas/:id/simular", identificarUsuario, async (req, res) => {
+  try {
+    const partidaId = Number(req.params.id);
+    const partidas = await query(
+      "SELECT id FROM Partidas WHERE id = ? AND usuario_id = ? AND estado = 'en_curso'",
+      [partidaId, req.usuario.id]
+    );
+    if (partidas.length === 0) {
+      return res.status(404).json({ error: "Partida no encontrada" });
+    }
+
+    const equipo = await equipoDePartida(partidaId);
+    if (equipo.length < FORMACION.length) {
+      return res.status(400).json({ error: "Tenés que completar los 11 puestos" });
+    }
+
+    // Todas las plantillas con sus jugadores: de acá salen los rivales
+    const plantillas = await query(
+      `SELECT Plantillas.id, Selecciones.nombre AS seleccion, Mundiales.anio
+       FROM Plantillas
+       JOIN Selecciones ON Selecciones.id = Plantillas.seleccion_id
+       JOIN Mundiales ON Mundiales.id = Plantillas.mundial_id`
+    );
+    const todosLosJugadores = await query(
+      `SELECT PlantillaJugadores.plantilla_id, PlantillaJugadores.posicion,
+              PlantillaJugadores.valoracion, Jugadores.nombre
+       FROM PlantillaJugadores
+       JOIN Jugadores ON Jugadores.id = PlantillaJugadores.jugador_id`
+    );
+    const jugadoresPorPlantilla = {};
+    todosLosJugadores.forEach((jugador) => {
+      if (!jugadoresPorPlantilla[jugador.plantilla_id]) {
+        jugadoresPorPlantilla[jugador.plantilla_id] = [];
+      }
+      jugadoresPorPlantilla[jugador.plantilla_id].push(jugador);
+    });
+    const posiblesRivales = plantillas.filter((plantilla) => (jugadoresPorPlantilla[plantilla.id] || []).length >= 11);
+
+    // Una ronda por fase; si perdemos, el torneo termina
+    const rondas = [];
+    const golesPorJugador = {};
+    for (const fase of FASES) {
+      const posicion = Math.floor(Math.random() * posiblesRivales.length);
+      const rival = posiblesRivales.splice(posicion, 1)[0];
+      const partido = simularPartido(equipo, jugadoresPorPlantilla[rival.id]);
+
+      partido.goleadoresFavor.forEach((goleador) => {
+        const id = goleador.plantilla_jugador_id;
+        golesPorJugador[id] = (golesPorJugador[id] || 0) + 1;
+      });
