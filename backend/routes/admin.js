@@ -113,3 +113,44 @@ router.delete("/mundiales/:id", async (req, res) => {
     responderError(res, err);
   }
 });
+
+
+/* ---------- Jugadores ---------- */
+router.get("/jugadores", async (req, res) => {
+  try {
+    res.json(await query("SELECT * FROM Jugadores ORDER BY nombre"));
+  } catch (err) {
+    responderError(res, err);
+  }
+});
+
+router.post("/jugadores", async (req, res) => {
+  try {
+    const { nombre } = req.body;
+    if (!nombre) return res.status(400).json({ error: "El nombre es obligatorio" });
+    const resultado = await query("INSERT INTO Jugadores (nombre) VALUES (?)", [nombre]);
+    res.status(201).json({ id: resultado.insertId });
+  } catch (err) {
+    responderError(res, err);
+  }
+});
+
+router.put("/jugadores/:id", async (req, res) => {
+  try {
+    const { nombre } = req.body;
+    if (!nombre) return res.status(400).json({ error: "El nombre es obligatorio" });
+    await query("UPDATE Jugadores SET nombre = ? WHERE id = ?", [nombre, req.params.id]);
+    res.json({ mensaje: "Jugador actualizado" });
+  } catch (err) {
+    responderError(res, err);
+  }
+});
+
+router.delete("/jugadores/:id", async (req, res) => {
+  try {
+    await query("DELETE FROM Jugadores WHERE id = ?", [req.params.id]);
+    res.json({ mensaje: "Jugador eliminado" });
+  } catch (err) {
+    responderError(res, err);
+  }
+});
