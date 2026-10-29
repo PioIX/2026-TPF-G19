@@ -11,3 +11,21 @@ export const FORMACION = [
   { numero: 10, etiqueta: "DC", posicion: "DEL", x: 50, y: 10 },
   { numero: 11, etiqueta: "ED", posicion: "DEL", x: 85, y: 18 },
 ];
+
+export const FASES = ["Octavos de Final", "Cuartos de Final", "Semifinal", "Final"];
+
+// Qué tan probable es que cada posición haga un gol
+const PESO_GOL = { DEL: 6, MED: 3, DEF: 1, POR: 0.05 };
+
+function promedio(numeros) {
+  if (numeros.length === 0) return 60;
+  let suma = 0;
+  numeros.forEach((numero) => {
+    suma = suma + numero;
+  });
+  return suma / numeros.length;
+}
+
+function valoracionesDe(jugadores, posicion) {
+  return jugadores.filter((jugador) => jugador.posicion === posicion).map((jugador) => jugador.valoracion);
+}
