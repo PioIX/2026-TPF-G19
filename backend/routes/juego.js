@@ -54,3 +54,45 @@ async function sortear(partidaId) {
     }
   }
 }
+
+// Arma todo lo que necesita el frontend para dibujar la partida
+async function armarEstado(partidaId) {
+  const filas = await query(
+    `SELECT Partidas.id, Partidas.estado, Partidas.plantilla_sorteada_id,
+            Selecciones.nombre AS seleccion, Selecciones.escudo_url, Mundiales.anio
+     FROM Partidas
+     LEFT JOIN Plantillas ON Plantillas.id = Partidas.plantilla_sorteada_id
+     LEFT JOIN Selecciones ON Selecciones.id = Plantillas.seleccion_id
+     LEFT JOIN Mundiales ON Mundiales.id = Plantillas.mundial_id
+     WHERE Partidas.id = ?`,
+    [partidaId]
+  );
+  const partida = filas[0];
+  const equipo = await equipoDePartida(partidaId);
+
+  let sorteo = [];
+  if (partida.plantilla_sorteada_id) {
+    const jugadores = await query(
+      `SELECT PlantillaJugadores.id, PlantillaJugadores.jugador_id, PlantillaJugadores.posicion,
+              PlantillaJugadores.valoracion, Jugadores.nombre
+       FROM PlantillaJugadores
+       JOIN Jugadores ON Jugadores.id = PlantillaJugadores.jugador_id
+       WHERE PlantillaJugadores.plantilla_id = ?
+       ORDER BY FIELD(PlantillaJugadores.posicion, 'POR', 'DEF', 'MED', 'DEL'), PlantillaJugadores.valoracion DESC`,
+      [partida.plantilla_sorteada_id]
+    );
+
+    const jugadoresUsados = equipo.map((elegido) => elegido.jugador_id);
+    const posicionesLibres = FORMACION.filter(
+      (puesto) => !equipo.some((elegido) => elegido.numero === puesto.numero)
+    ).map((puesto) => puesto.posicion);
+
+    // elegible = se puede elegir (hay un puesto libre en su posición y no lo elegimos antes)
+    sorteo = jugadores.map((jugador) => ({
+      ...jugador,
+      elegible: posicionesLibres.includes(jugador.posicion) && !jugadoresUsados.includes(jugador.jugador_id),
+    }));
+  }
+
+  return { partida, formacion: FORMACION, equipo, sorteo };
+}
