@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS proyecto_final_g19;
+USE proyecto_final_g19;
+
 CREATE TABLE IF NOT EXISTS Usuarios (
 		id INT AUTO_INCREMENT,
 		nombre VARCHAR(255) NOT NULL UNIQUE,
