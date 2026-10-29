@@ -49,13 +49,13 @@ app.post("/registro", async (req, res) => {
       return res.status(409).json({ error: "Ese email o nombre de usuario ya está registrado" });
     }
 
-    await query("INSERT INTO Usuarios (nombre, correo, contrasenia) VALUES (?, ?, ?)", [
+    await query("INSERT INTO Usuarios (nombre, correo, contrasenia, fecha_creacion) VALUES (?, ?, ?, NOW())", [
       nombre,
       correo,
-      hashContrasenia(contrasenia),
+      contrasenia,
     ]);
 
-    res.status(201).json({ mensaje: "Usuario registrado correctamente" });
+     res.status(201).json({ mensaje: "Usuario registrado correctamente" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Error del servidor" });
