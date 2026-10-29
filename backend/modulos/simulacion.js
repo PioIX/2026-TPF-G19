@@ -29,3 +29,24 @@ function promedio(numeros) {
 function valoracionesDe(jugadores, posicion) {
   return jugadores.filter((jugador) => jugador.posicion === posicion).map((jugador) => jugador.valoracion);
 }
+
+// Ataque: delanteros y mediocampistas. Defensa: arquero y defensores.
+function calcularFuerza(jugadores) {
+  return {
+    ataque: promedio(valoracionesDe(jugadores, "DEL")) * 0.6 + promedio(valoracionesDe(jugadores, "MED")) * 0.4,
+    defensa: promedio(valoracionesDe(jugadores, "POR")) * 0.4 + promedio(valoracionesDe(jugadores, "DEF")) * 0.6,
+  };
+}
+
+// Cantidad de goles al azar a partir de un promedio de goles esperados
+function golesAlAzar(promedioGoles) {
+  const limite = Math.exp(-promedioGoles);
+  let goles = 0;
+  let azar = Math.random();
+  while (azar > limite && goles < 8) {
+    goles++;
+    azar = azar * Math.random();
+  }
+  return goles;
+}
+
