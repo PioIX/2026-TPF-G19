@@ -45,3 +45,27 @@ router.post("/selecciones", async (req, res) => {
   }
 });
 
+router.put("/selecciones/:id", async (req, res) => {
+  try {
+    const { nombre, codigo, escudo_url } = req.body;
+    if (!nombre || !codigo) return res.status(400).json({ error: "Nombre y código son obligatorios" });
+    await query("UPDATE Selecciones SET nombre = ?, codigo = ?, escudo_url = ? WHERE id = ?", [
+      nombre,
+      codigo,
+      escudo_url || null,
+      req.params.id,
+    ]);
+    res.json({ mensaje: "Selección actualizada" });
+  } catch (err) {
+    responderError(res, err);
+  }
+});
+
+router.delete("/selecciones/:id", async (req, res) => {
+  try {
+    await query("DELETE FROM Selecciones WHERE id = ?", [req.params.id]);
+    res.json({ mensaje: "Selección eliminada" });
+  } catch (err) {
+    responderError(res, err);
+  }
+});
