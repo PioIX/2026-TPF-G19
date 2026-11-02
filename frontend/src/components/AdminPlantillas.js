@@ -1,8 +1,12 @@
+AdminPlantillas.js (nuevo)
+js
 "use client";
+
 import { useEffect, useState } from "react";
 import Button from "./Button";
 import { api } from "@/lib/api";
 import styles from "./TablaCrud.module.css";
+
 const POSICIONES = ["POR", "DEF", "MED", "DEL"];
 const FORM_VACIO = { jugador_id: "", posicion: "DEL", valoracion: 80 };
 
@@ -20,13 +24,14 @@ export default function AdminPlantillas() {
   const [error, setError] = useState("");
   const [version, setVersion] = useState(0); // al cambiar, se vuelven a pedir las listas
 
-// Listas para los desplegables (se piden una sola vez)
+  // Listas para los desplegables (se piden una sola vez)
   useEffect(() => {
     api("/admin/selecciones").then((data) => setSelecciones(data)).catch((e) => setError(e.message));
     api("/admin/mundiales").then((data) => setMundiales(data)).catch((e) => setError(e.message));
     api("/admin/jugadores").then((data) => setJugadores(data)).catch((e) => setError(e.message));
   }, []);
- useEffect(() => {
+
+  useEffect(() => {
     api("/admin/plantillas")
       .then((data) => setPlantillas(data))
       .catch((e) => setError(e.message));
@@ -62,7 +67,8 @@ export default function AdminPlantillas() {
       setError(e.message);
     }
   }
-   async function guardarIntegrante(event) {
+
+  async function guardarIntegrante(event) {
     event.preventDefault();
     setError("");
     try {
@@ -139,8 +145,8 @@ export default function AdminPlantillas() {
         </select>
         <Button type="submit">Crear plantilla</Button>
       </form>
-      
- <div className={styles.scroll}>
+
+      <div className={styles.scroll}>
         <table className={styles.tabla}>
           <thead>
             <tr>
@@ -169,3 +175,94 @@ export default function AdminPlantillas() {
           </tbody>
         </table>
       </div>
+
+      {plantillaAbierta && (
+        <div className={styles.detalle}>
+          <h3>
+            Jugadores de {plantillaAbierta.seleccion} {plantillaAbierta.anio}
+          </h3>
+
+          <form className={styles.form} onSubmit={guardarIntegrante}>
+            {!editandoId && (
+              <div className={styles.grupo}>
+                <input
+                  className={styles.input}
+                  placeholder="Filtrar jugador..."
+                  value={filtro}
+                  onChange={(event) => setFiltro(event.target.value)}
+                />
+                <select
+                  className={styles.input}
+                  value={form.jugador_id}
+                  onChange={(event) => setForm({ ...form, jugador_id: event.target.value })}
+                >
+                  <option value="">Jugador...</option>
+                  {jugadoresFiltrados.map((jugador) => (
+                    <option key={jugador.id} value={jugador.id}>
+                      {jugador.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            <select
+              className={styles.input}
+              value={form.posicion}
+              onChange={(event) => setForm({ ...form, posicion: event.target.value })}
+            >
+              {POSICIONES.map((posicion) => (
+                <option key={posicion} value={posicion}>
+                  {posicion}
+                </option>
+              ))}
+            </select>
+            <input
+              className={styles.input}
+              type="number"
+              min="1"
+              max="99"
+              value={form.valoracion}
+              onChange={(event) => setForm({ ...form, valoracion: event.target.value })}
+            />
+            <Button type="submit">{editandoId ? "Guardar cambios" : "Agregar jugador"}</Button>
+            {editandoId && (
+              <Button variante="secundario" onClick={cancelarEdicion}>
+                Cancelar
+              </Button>
+            )}
+          </form>
+
+          <div className={styles.scroll}>
+            <table className={styles.tabla}>
+              <thead>
+                <tr>
+                  <th>Jugador</th>
+                  <th>Posición</th>
+                  <th>Valoración</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {integrantes.map((integrante) => (
+                  <tr key={integrante.id}>
+                    <td>{integrante.nombre}</td>
+                    <td>{integrante.posicion}</td>
+                    <td>{integrante.valoracion}</td>
+                    <td className={styles.acciones}>
+                      <Button chico variante="secundario" onClick={() => editarIntegrante(integrante)}>
+                        Editar
+                      </Button>
+                      <Button chico variante="peligro" onClick={() => quitarIntegrante(integrante)}>
+                        Quitar
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
