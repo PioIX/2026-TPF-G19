@@ -1,0 +1,93 @@
+.contenedor {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.tarjeta {
+  width: 100%;
+  max-width: 400px;
+  background: var(--negro);
+  border: 1px solid var(--cesped);
+  border-radius: var(--radio);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto;
+  width: 64px;
+  height: auto;
+}
+
+.titulo {
+  text-align: center;
+  font-size: 2.2rem;
+  color: var(--dorado);
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.campo input {
+  background: var(--cancha);
+  border: 1px solid var(--cesped);
+  border-radius: 8px;
+  color: var(--hueso);
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.campo input:focus {
+  outline: 2px solid var(--celeste);
+}
+
+.boton {
+  background: var(--cesped);
+  color: var(--hueso);
+  border: none;
+  border-radius: var(--radio);
+  padding: 12px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  background: rgba(229, 72, 77, 0.15);
+  border: 1px solid var(--error);
+  color: var(--error);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 0.9rem;
+}
+
+.ok {
+  background: rgba(31, 138, 76, 0.2);
+  border: 1px solid var(--cesped);
+  color: var(--hueso);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 0.9rem;
+}
+
+.link {
+  text-align: center;
+  font-size: 0.9rem;
+}
