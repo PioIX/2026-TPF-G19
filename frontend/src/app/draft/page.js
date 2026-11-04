@@ -200,3 +200,31 @@ export default function DraftPage() {
               : "Elegí un jugador de la lista."}
           </p>
         </div>
+        <div className="tarjeta">
+          <h2>
+            Alineación ({estado.equipo.length}/{estado.formacion.length})
+          </h2>
+          <Cancha
+            formacion={estado.formacion}
+            equipo={estado.equipo}
+            habilitados={puestosHabilitados}
+            onElegir={colocarJugador}
+          />
+          <Button variante="secundario" chico onClick={abandonar}>
+            Abandonar partida
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <Navbar usuario={usuario} />
+      <main className={styles.principal}>
+        {error && <div className={styles.error}>{error}</div>}
+        {renderContenido()}
+      </main>
+    </div>
+  );
+}
