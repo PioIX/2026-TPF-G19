@@ -27,3 +27,41 @@ export default function DraftPage() {
       .catch((e) => setError(e.message))
       .finally(() => setCargando(false));
   }, [usuario]);
+
+   async function nuevaPartida() {
+    setError("");
+    setResultado(null);
+    setNumeroRonda(0);
+    setJugadorElegido(null);
+    try {
+      setEstado(await api("/partidas", "POST"));
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  async function colocarJugador(numeroPuesto) {
+    setError("");
+    try {
+      const data = await api(`/partidas/${estado.partida.id}/elegir`, "POST", {
+        plantilla_jugador_id: jugadorElegido.id,
+        numero: numeroPuesto,
+      });
+      setEstado(data);
+      setJugadorElegido(null);
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  async function simularTorneo() {
+    setError("");
+    try {
+      const data = await api(`/partidas/${estado.partida.id}/simular`, "POST");
+      setResultado(data);
+      setNumeroRonda(0);
+      setEstado(null);
+    } catch (e) {
+      setError(e.message);
+    }
+  }
