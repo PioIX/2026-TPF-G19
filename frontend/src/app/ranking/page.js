@@ -15,3 +15,13 @@ export default function RankingPage() {
   const [historial, setHistorial] = useState([]);
   const [aviso, setAviso] = useState("");
   const [version, setVersion] = useState(0);
+
+   useEffect(() => {
+    if (!usuario) return;
+    api("/ranking")
+      .then((data) => setRanking(data))
+      .catch(() => {});
+    api("/historial")
+      .then((data) => setHistorial(data))
+      .catch(() => {});
+  }, [usuario, version]);
