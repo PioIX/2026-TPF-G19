@@ -65,3 +65,30 @@ export default function DraftPage() {
       setError(e.message);
     }
   }
+
+   async function abandonar() {
+    if (!confirm("¿Abandonar la partida actual?")) return;
+    try {
+      await api(`/partidas/${estado.partida.id}/abandonar`, "POST");
+      setEstado(null);
+      setJugadorElegido(null);
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  if (!usuario || cargando) {
+    return <div className={styles.cargando}>Cargando...</div>;
+  }
+
+  
+  let puestosHabilitados = [];
+  if (jugadorElegido) {
+    puestosHabilitados = estado.formacion
+      .filter(
+        (puesto) =>
+          puesto.posicion === jugadorElegido.posicion &&
+          !estado.equipo.some((elegido) => elegido.numero === puesto.numero)
+      )
+      .map((puesto) => puesto.numero);
+  }
