@@ -1,4 +1,4 @@
-// src/hooks/useSocket.js
+
 import { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
@@ -12,7 +12,7 @@ export default function useSocket({ serverUrl = "http://localhost:4000", options
 
   useEffect(() => {
     const socket = socketRef.current;
-    socket.connect(); // por si el efecto se vuelve a ejecutar tras un disconnect 
+    socket.connect(); 
     const onConnect = () => {
       setIsConnected(true);
       console.log("WebSocket conectado:", socket.id);
@@ -28,7 +28,7 @@ export default function useSocket({ serverUrl = "http://localhost:4000", options
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
-      socket.disconnect(); // cierra la conexión al salir de la página
+      socket.disconnect(); 
     };
   }, []);
 

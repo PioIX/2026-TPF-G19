@@ -14,7 +14,7 @@ export const FORMACION = [
 
 export const FASES = ["Octavos de Final", "Cuartos de Final", "Semifinal", "Final"];
 
-// Qué tan probable es que cada posición haga un gol
+
 const PESO_GOL = { DEL: 6, MED: 3, DEF: 1, POR: 0.05 };
 
 function promedio(numeros) {
@@ -30,7 +30,7 @@ function valoracionesDe(jugadores, posicion) {
   return jugadores.filter((jugador) => jugador.posicion === posicion).map((jugador) => jugador.valoracion);
 }
 
-// Ataque: delanteros y mediocampistas. Defensa: arquero y defensores.
+
 function calcularFuerza(jugadores) {
   return {
     ataque: promedio(valoracionesDe(jugadores, "DEL")) * 0.6 + promedio(valoracionesDe(jugadores, "MED")) * 0.4,
@@ -38,7 +38,7 @@ function calcularFuerza(jugadores) {
   };
 }
 
-// Cantidad de goles al azar a partir de un promedio de goles esperados
+
 function golesAlAzar(promedioGoles) {
   const limite = Math.exp(-promedioGoles);
   let goles = 0;
@@ -50,7 +50,7 @@ function golesAlAzar(promedioGoles) {
   return goles;
 }
 
-// Elige qué jugador hizo el gol (los delanteros y los mejor valorados tienen más chances)
+
 function elegirGoleador(jugadores) {
   const pesos = jugadores.map((jugador) => PESO_GOL[jugador.posicion] * jugador.valoracion);
   let total = 0;
@@ -66,7 +66,7 @@ function elegirGoleador(jugadores) {
   return jugadores[jugadores.length - 1];
 }
 
-// equipo y rival: listas de { nombre, posicion, valoracion }
+
 export function simularPartido(equipo, rival) {
   const fuerzaEquipo = calcularFuerza(equipo);
   const fuerzaRival = calcularFuerza(rival);
@@ -77,7 +77,7 @@ export function simularPartido(equipo, rival) {
   let gana = golesFavor > golesContra;
   const penales = golesFavor === golesContra;
   if (penales) {
-    // Si empatan se define por penales: es casi 50 y 50, con una pequeña ventaja al más fuerte
+
     const diferencia = fuerzaEquipo.ataque + fuerzaEquipo.defensa - fuerzaRival.ataque - fuerzaRival.defensa;
     gana = Math.random() < 0.5 + diferencia / 400;
   }
@@ -94,7 +94,7 @@ export function simularPartido(equipo, rival) {
   return { golesFavor, golesContra, penales, gana, goleadoresFavor, goleadoresContra };
 }
 
-// 100 puntos por ronda ganada, +10 por gol a favor, -5 por gol en contra y +200 si sale campeón
+
 export function calcularPuntaje(rondas) {
   let puntos = 0;
   rondas.forEach((ronda) => {

@@ -5,14 +5,14 @@ import Button from "./Button";
 import { api } from "@/lib/api";
 import styles from "./TablaCrud.module.css";
 
-// campos: [{ name, label, type }] -> sirve para cualquier tabla simple del backend
+
 export default function TablaCrud({ titulo, ruta, campos }) {
   const [filas, setFilas] = useState([]);
   const [form, setForm] = useState(crearFormVacio());
   const [editandoId, setEditandoId] = useState(null);
   const [busqueda, setBusqueda] = useState("");
   const [error, setError] = useState("");
-  const [version, setVersion] = useState(0); // al cambiar, se vuelve a pedir la lista
+  const [version, setVersion] = useState(0); 
 
   function crearFormVacio() {
     const vacio = {};
@@ -72,7 +72,7 @@ export default function TablaCrud({ titulo, ruta, campos }) {
     }
   }
 
-  // Buscador: deja las filas donde algún campo contiene el texto (máximo 100 filas)
+  
   const filasVisibles = filas
     .filter((fila) =>
       campos.some((campo) => String(fila[campo.name] || "").toLowerCase().includes(busqueda.toLowerCase()))

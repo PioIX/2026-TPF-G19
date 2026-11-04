@@ -1,6 +1,6 @@
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-// Hace un fetch al backend avisando quién es el usuario (el que se guardó en el login)
+
 export async function api(ruta, metodo = "GET", cuerpo) {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
 

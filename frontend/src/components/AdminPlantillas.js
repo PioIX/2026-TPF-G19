@@ -17,15 +17,15 @@ export default function AdminPlantillas() {
   const [mundiales, setMundiales] = useState([]);
   const [jugadores, setJugadores] = useState([]);
   const [nuevaPlantilla, setNuevaPlantilla] = useState({ seleccion_id: "", mundial_id: "" });
-  const [plantillaAbierta, setPlantillaAbierta] = useState(null); // plantilla cuyos jugadores se están viendo
+  const [plantillaAbierta, setPlantillaAbierta] = useState(null); 
   const [integrantes, setIntegrantes] = useState([]);
   const [form, setForm] = useState(FORM_VACIO);
   const [editandoId, setEditandoId] = useState(null);
   const [filtro, setFiltro] = useState("");
   const [error, setError] = useState("");
-  const [version, setVersion] = useState(0); // al cambiar, se vuelven a pedir las listas
+  const [version, setVersion] = useState(0); 
  HEAD
-  // Listas para los desplegables (se piden una sola vez)
+  
   useEffect(() => {
     api("/admin/selecciones").then((data) => setSelecciones(data)).catch((e) => setError(e.message));
     api("/admin/mundiales").then((data) => setMundiales(data)).catch((e) => setError(e.message));
@@ -109,7 +109,7 @@ export default function AdminPlantillas() {
     }
   }
 
-  // Solo mostramos los primeros 50 jugadores que coinciden con el filtro
+  
   const jugadoresFiltrados = jugadores
     .filter((jugador) => jugador.nombre.toLowerCase().includes(filtro.toLowerCase()))
     .slice(0, 50);

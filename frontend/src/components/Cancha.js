@@ -1,9 +1,7 @@
 import clsx from "clsx";
 import styles from "./Cancha.module.css";
 
-// formacion: los puestos (con su posición x/y en la cancha) que manda el backend
-// equipo: jugadores ya elegidos
-// habilitados: números de los puestos donde se puede poner el jugador seleccionado
+
 export default function Cancha({ formacion, equipo, habilitados = [], onElegir }) {
   return (
     <div className={styles.cancha}>

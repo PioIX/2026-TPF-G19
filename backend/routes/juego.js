@@ -5,7 +5,7 @@ import { FORMACION, FASES, simularPartido, calcularPuntaje } from "../modulos/si
 
 const router = Router();
 
-// Jugadores que el usuario ya eligió en una partida
+
 async function equipoDePartida(partidaId) {
   return await query(
     `SELECT PartidaJugadores.numero, PartidaJugadores.posicion, PartidaJugadores.goles,
@@ -20,7 +20,7 @@ async function equipoDePartida(partidaId) {
   );
 }
 
-// Sortea una plantilla que tenga al menos un jugador útil para los puestos que faltan
+
 async function sortear(partidaId) {
   const equipo = await equipoDePartida(partidaId);
   const puestosOcupados = equipo.map((elegido) => elegido.numero);
@@ -29,7 +29,7 @@ async function sortear(partidaId) {
     (puesto) => puesto.posicion
   );
 
-  // Si ya están los 11 puestos, no hay más sorteos
+  
   if (posicionesLibres.length === 0) {
     await query("UPDATE Partidas SET plantilla_sorteada_id = NULL WHERE id = ?", [partidaId]);
     return;
@@ -55,7 +55,7 @@ async function sortear(partidaId) {
   }
 }
 
-// Arma todo lo que necesita el frontend para dibujar la partida
+
 async function armarEstado(partidaId) {
   const filas = await query(
     `SELECT Partidas.id, Partidas.estado, Partidas.plantilla_sorteada_id,
@@ -87,7 +87,7 @@ async function armarEstado(partidaId) {
       (puesto) => !equipo.some((elegido) => elegido.numero === puesto.numero)
     ).map((puesto) => puesto.posicion);
 
-    // elegible = se puede elegir (hay un puesto libre en su posición y no lo elegimos antes)
+   
     sorteo = jugadores.map((jugador) => ({
       ...jugador,
       elegible: posicionesLibres.includes(jugador.posicion) && !jugadoresUsados.includes(jugador.jugador_id),
@@ -97,7 +97,7 @@ async function armarEstado(partidaId) {
   return { partida, formacion: FORMACION, equipo, sorteo };
 }
 
-// Partida en curso del usuario (si tiene una)
+
 router.get("/partidas/actual", identificarUsuario, async (req, res) => {
   try {
     const filas = await query(
@@ -114,7 +114,7 @@ router.get("/partidas/actual", identificarUsuario, async (req, res) => {
   }
 });
 
-// Nueva partida: abandona la anterior y hace el primer sorteo
+
 router.post("/partidas", identificarUsuario, async (req, res) => {
   try {
     await query(
@@ -133,7 +133,7 @@ router.post("/partidas", identificarUsuario, async (req, res) => {
   }
 });
 
-// Elegir un jugador del sorteo para un puesto de la formación
+
 router.post("/partidas/:id/elegir", identificarUsuario, async (req, res) => {
   try {
     const partidaId = Number(req.params.id);
@@ -148,7 +148,7 @@ router.post("/partidas/:id/elegir", identificarUsuario, async (req, res) => {
       return res.status(404).json({ error: "Partida no encontrada" });
     }
 
-    // El jugador tiene que ser de la plantilla sorteada
+   
     const jugadores = await query("SELECT * FROM PlantillaJugadores WHERE id = ? AND plantilla_id = ?", [
       plantillaJugadorId,
       partidas[0].plantilla_sorteada_id,
@@ -186,7 +186,7 @@ router.post("/partidas/:id/elegir", identificarUsuario, async (req, res) => {
   }
 });
 
-// Simula el torneo completo (octavos a final) y guarda el puntaje
+
 router.post("/partidas/:id/simular", identificarUsuario, async (req, res) => {
   try {
     const partidaId = Number(req.params.id);
@@ -203,7 +203,7 @@ router.post("/partidas/:id/simular", identificarUsuario, async (req, res) => {
       return res.status(400).json({ error: "Tenés que completar los 11 puestos" });
     }
 
-    // Todas las plantillas con sus jugadores: de acá salen los rivales
+   
     const plantillas = await query(
       `SELECT Plantillas.id, Selecciones.nombre AS seleccion, Mundiales.anio
        FROM Plantillas
@@ -225,7 +225,7 @@ router.post("/partidas/:id/simular", identificarUsuario, async (req, res) => {
     });
     const posiblesRivales = plantillas.filter((plantilla) => (jugadoresPorPlantilla[plantilla.id] || []).length >= 11);
 
-    // Una ronda por fase; si perdemos, el torneo termina
+  
     const rondas = [];
     const golesPorJugador = {};
     for (const fase of FASES) {
@@ -257,7 +257,7 @@ router.post("/partidas/:id/simular", identificarUsuario, async (req, res) => {
     const faseFinal = campeon ? "Campeón" : ultimaRonda.fase;
     const puntaje = calcularPuntaje(rondas);
 
-    // Guardamos los goles de cada jugador y cerramos la partida
+    
     for (const plantillaJugadorId of Object.keys(golesPorJugador)) {
       await query(
         "UPDATE PartidaJugadores SET goles = ? WHERE partida_id = ? AND plantilla_jugador_id = ?",
@@ -270,7 +270,7 @@ router.post("/partidas/:id/simular", identificarUsuario, async (req, res) => {
       [ultimaRonda.rival.id, faseFinal, ultimaRonda.golesFavor, ultimaRonda.golesContra, puntaje, partidaId]
     );
 
-    // WebSocket: le avisa a todos los conectados que el ranking cambió
+ 
     req.app.get("io").emit("ranking:actualizado", {
       nombre: req.usuario.nombre,
       puntaje: puntaje,
