@@ -139,3 +139,32 @@ export default function DraftPage() {
         </div>
       );
     }
+
+     if (!estado) {
+      return (
+        <div className="tarjeta">
+          <h2>Draft XI</h2>
+          <p>
+            En cada turno se sortea una selección de un Mundial. Elegí un jugador para un puesto libre de tu
+            4-3-3. Cuando completes los 11, tu equipo juega el torneo desde octavos hasta la final.
+          </p>
+          <Button onClick={nuevaPartida}>Nueva partida</Button>
+        </div>
+      );
+    }
+
+ 
+    if (estado.equipo.length === estado.formacion.length) {
+      return (
+        <div className="tarjeta">
+          <h2>Tu equipo está completo</h2>
+          <Cancha formacion={estado.formacion} equipo={estado.equipo} onElegir={() => {}} />
+          <div className={styles.acciones}>
+            <Button onClick={simularTorneo}>Simular torneo</Button>
+            <Button variante="secundario" onClick={abandonar}>
+              Abandonar
+            </Button>
+          </div>
+        </div>
+      );
+    }
