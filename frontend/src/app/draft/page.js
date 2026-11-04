@@ -168,3 +168,35 @@ export default function DraftPage() {
         </div>
       );
     }
+
+     return (
+      <div className={styles.columnas}>
+        <div className="tarjeta">
+          <h2>Sorteo</h2>
+          <p className={styles.sorteo}>
+            {estado.partida.seleccion} {estado.partida.anio}
+          </p>
+          <ul className={styles.lista}>
+            {estado.sorteo.map((jugador) => (
+              <li key={jugador.id}>
+                <button
+                  type="button"
+                  disabled={!jugador.elegible}
+                  onClick={() => setJugadorElegido(jugador)}
+                  className={clsx(styles.jugador, {
+                    [styles.elegido]: jugadorElegido && jugadorElegido.id === jugador.id,
+                    [styles.noDisponible]: !jugador.elegible,
+                  })}
+                >
+                  <span className={styles.posicion}>{jugador.posicion}</span>
+                  {jugador.nombre} | {jugador.valoracion}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <p className={styles.ayuda}>
+            {jugadorElegido
+              ? `Elegiste a ${jugadorElegido.nombre}. Tocá un puesto ${jugadorElegido.posicion} resaltado en la cancha.`
+              : "Elegí un jugador de la lista."}
+          </p>
+        </div>
