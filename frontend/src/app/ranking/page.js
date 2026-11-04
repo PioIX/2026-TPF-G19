@@ -25,3 +25,64 @@ export default function RankingPage() {
       .then((data) => setHistorial(data))
       .catch(() => {});
   }, [usuario, version]);
+
+   useEffect(() => {
+    const alActualizar = (datos) => {
+      setAviso(`${datos.nombre} sumó ${datos.puntaje} puntos (${datos.fase})`);
+      setVersion((versionActual) => versionActual + 1);
+    };
+    socket.on("ranking:actualizado", alActualizar);
+    return () => socket.off("ranking:actualizado", alActualizar);
+  }, [socket]);
+
+  if (!usuario) {
+    return <div className={styles.cargando}>Cargando...</div>;
+  }
+
+  return (
+    <div>
+      <Navbar usuario={usuario} />
+      <main className={styles.principal}>
+        <h1 className={styles.titulo}>Mi perfil y estadísticas</h1>
+        <p className={styles.estado}>{isConnected ? "🟢 Ranking en vivo" : "🔴 Sin conexión en vivo"}</p>
+        {aviso && <p className={styles.aviso}>{aviso}</p>}
+
+        <div className={styles.columnas}>
+          <section className="tarjeta">
+            <h2>Ranking global</h2>
+            {ranking.length === 0 && <p>Todavía no hay partidas finalizadas.</p>}
+            <ol className={styles.lista}>
+              {ranking.map((fila) => (
+                <li key={fila.id} className={fila.nombre === usuario.nombre ? styles.mio : ""}>
+                  <span>{fila.nombre}</span>
+                  <small>{fila.fase}</small>
+                  <strong>{fila.puntaje}</strong>
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <section className="tarjeta">
+            <h2>Mi historial</h2>
+            {historial.length === 0 && <p>Todavía no jugaste ninguna partida.</p>}
+            <ol className={styles.lista}>
+              {historial.map((partida) => (
+                <li key={partida.id}>
+                  <span>
+                    vs {partida.rival} {partida.rival_anio} ({partida.goles_favor}-{partida.goles_contra})
+                  </span>
+                  <small>{new Date(partida.fecha_fin).toLocaleDateString("es-AR")}</small>
+                  <strong>{partida.puntaje}</strong>
+                </li>
+              ))}
+            </ol>
+          </section>
+        </div>
+
+        <Link href="/" className="btn secundario">
+          Volver al inicio
+        </Link>
+      </main>
+    </div>
+  );
+}
