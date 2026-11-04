@@ -92,3 +92,50 @@ export default function DraftPage() {
       )
       .map((puesto) => puesto.numero);
   }
+
+  function renderContenido() {
+    
+    if (resultado) {
+      const ronda = resultado.rondas[numeroRonda];
+      const esUltimaRonda = numeroRonda === resultado.rondas.length - 1;
+
+      return (
+        <div className="tarjeta">
+          <h2 className={styles.fase}>{ronda.fase}</h2>
+          <div className={styles.marcador}>
+            <div className={styles.lado}>
+              <strong>Tu equipo</strong>
+              <small>{ronda.goleadoresFavor.join(", ") || "Sin goles"}</small>
+            </div>
+            <div className={styles.goles}>
+              {ronda.golesFavor} - {ronda.golesContra}
+            </div>
+            <div className={styles.lado}>
+              <strong>
+                {ronda.rival.seleccion} {ronda.rival.anio}
+              </strong>
+              <small>{ronda.goleadoresContra.join(", ") || "Sin goles"}</small>
+            </div>
+          </div>
+          {ronda.penales && <p className={styles.centrado}>{ronda.gana ? "Ganaste" : "Perdiste"} por penales</p>}
+
+          {!esUltimaRonda && <Button onClick={() => setNumeroRonda(numeroRonda + 1)}>Siguiente</Button>}
+
+          {esUltimaRonda && (
+            <div className={styles.final}>
+              <h2>{resultado.campeon ? "¡Campeón del mundo!" : `Eliminado en ${ronda.fase}`}</h2>
+              <p>Puntaje obtenido: {resultado.puntaje}</p>
+              <div className={styles.acciones}>
+                <Button onClick={nuevaPartida}>Jugar de nuevo</Button>
+                <Link href="/ranking" className="btn secundario">
+                  Ver ranking
+                </Link>
+                <Link href="/" className="btn secundario">
+                  Volver al inicio
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
