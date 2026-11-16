@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 75" width="64" height="75">
+  <circle cx="32" cy="9" r="7.5" fill="#F8F8F2" stroke="#0E1A24" stroke-width="1"/>
+  <polygon points="32,4.8 35.6,7.4 34.2,11.6 29.8,11.6 28.4,7.4" fill="#0E1A24"/>
+  <path d="M8 20h48v22c0 11-10 18-24 22C18 60 8 53 8 42z" fill="#0E1A24" stroke="#F5C542" stroke-width="2.5" stroke-linejoin="round"/>
+  <text x="32" y="48" text-anchor="middle" font-family="Impact, 'Bebas Neue', sans-serif" font-size="27" fill="#F5C542">XI</text>
+  <text x="32" y="73" text-anchor="middle" font-family="Impact, 'Bebas Neue', sans-serif" font-size="9" letter-spacing="1.2" fill="#F8F8F2">DRAFT XI</text>
+</svg>
