@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { query } from "./modulos/mysql.js";
 import rutasAdmin from "./routes/admin.js";
 import rutasJuego from "./routes/juego.js";
+import { registrarSalas } from "./salas.js";
 
 dotenv.config();
 
@@ -18,6 +19,22 @@ app.use(express.json());
 const server = createServer(app);
 const io = new Server(server, { cors: { origin: ORIGENES } });
 app.set("io", io);
+
+io.use(async (socket, next) => {
+  try {
+    const id = Number(socket.handshake.auth && socket.handshake.auth.usuarioId);
+    if (!id) return next(new Error("No autorizado"));
+    const filas = await query("SELECT id, nombre, rol FROM Usuarios WHERE id = ?", [id]);
+    if (filas.length === 0) return next(new Error("No autorizado"));
+    socket.data.usuario = { id: filas[0].id, nombre: filas[0].nombre, rol: filas[0].rol };
+    next();
+  } catch (err) {
+    console.error(err);
+    next(new Error("Error del servidor"));
+  }
+});
+
+registrarSalas(io);
 
 io.on("connection", (socket) => {
   io.emit("usuarios:conectados", io.of("/").sockets.size);
