@@ -1,5 +1,90 @@
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+
 .grupo {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  flex: 1 1 100%;
+}
+
+.input {
+  flex: 1 1 140px;
+  min-width: 0;
+  background: var(--cancha);
+  border: 1px solid var(--cesped);
+  border-radius: 8px;
+  color: var(--hueso);
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.input:focus {
+  outline: 2px solid var(--celeste);
+}
+
+.error {
+  background: rgba(229, 72, 77, 0.15);
+  border: 1px solid var(--error);
+  color: var(--error);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+.scroll {
+  overflow-x: auto;
+  margin-top: 12px;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.tabla th,
+.tabla td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid rgba(31, 138, 76, 0.5);
+}
+
+.tabla th {
+  color: var(--dorado);
+  font-weight: 600;
+}
+
+.celda {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acciones {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.acciones > * {
+  margin-left: 6px;
+}
+
+.nota {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.detalle {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--cesped);
 }
