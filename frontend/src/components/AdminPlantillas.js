@@ -1,12 +1,9 @@
-AdminPlantillas.js (nuevo)
-js
 "use client";
 
 import { useEffect, useState } from "react";
 import Button from "./Button";
 import { api } from "@/lib/api";
 import styles from "./TablaCrud.module.css";
-HEAD
 
 const POSICIONES = ["POR", "DEF", "MED", "DEL"];
 const FORM_VACIO = { jugador_id: "", posicion: "DEL", valoracion: 80 };
@@ -24,7 +21,6 @@ export default function AdminPlantillas() {
   const [filtro, setFiltro] = useState("");
   const [error, setError] = useState("");
   const [version, setVersion] = useState(0); 
- HEAD
   
   useEffect(() => {
     api("/admin/selecciones").then((data) => setSelecciones(data)).catch((e) => setError(e.message));
