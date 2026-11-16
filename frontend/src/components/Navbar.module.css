@@ -1,0 +1,52 @@
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--negro);
+  border-bottom: 1px solid var(--cesped);
+}
+
+.izquierda {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--dorado);
+  border-radius: 999px;
+  color: var(--dorado);
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.volver:hover {
+  background: rgba(245, 197, 66, 0.15);
+  text-decoration: none;
+}
+
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  font-weight: 600;
+}
+
+.nombre {
+  color: var(--dorado);
+  font-size: 0.9rem;
+}
