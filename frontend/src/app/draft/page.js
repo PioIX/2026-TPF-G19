@@ -29,9 +29,14 @@ export default function DraftPage() {
   useEffect(() => {
     if (!usuario) return;
     api("/partidas/actual")
-      .then((data) => setEstado(data.partida ? data : null))
-      .catch((e) => setError(e.message))
-      .finally(() => setCargando(false));
+      .then((data) => {
+        setEstado(data.partida ? data : null);
+        setCargando(false);
+      })
+      .catch((e) => {
+        setError(e.message);
+        setCargando(false);
+      });
   }, [usuario]);
 
    async function nuevaPartida() {

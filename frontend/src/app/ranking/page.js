@@ -6,41 +6,56 @@ import styles from "./page.module.css";
 import Navbar from "@/components/Navbar";
 import useUsuario from "@/hooks/useUsuario";
 import useSocket from "@/hooks/useSocket";
-import { api, API_URL } from "@/lib/api";
+import { api } from "@/lib/api";
 
 export default function RankingPage() {
   const usuario = useUsuario();
-  const { socket, isConnected } = useSocket({ serverUrl: API_URL });
+  const { socket, isConnected } = useSocket();
   const [ranking, setRanking] = useState([]);
   const [historial, setHistorial] = useState([]);
   const [aviso, setAviso] = useState("");
   const [version, setVersion] = useState(0);
 
-   useEffect(() => {
+  useEffect(() => {
     if (!usuario) return;
     api("/ranking")
       .then((data) => setRanking(data))
-      .catch(() => {});
+      .catch(() => { });
     api("/historial")
       .then((data) => setHistorial(data))
-      .catch(() => {});
+      .catch(() => { });
   }, [usuario, version]);
 
-   useEffect(() => {
+  useEffect(() => {
+    if (!socket) return;
+
     const alActualizar = (datos) => {
       setAviso(`${datos.nombre} sumó ${datos.puntaje} puntos (${datos.fase})`);
-      setVersion((versionActual) => versionActual + 1);
+      setVersion(version + 1);
     };
     socket.on("ranking:actualizado", alActualizar);
     return () => socket.off("ranking:actualizado", alActualizar);
-  }, [socket]);
+  }, [socket, version]);
 
   if (!usuario) {
     return <div className={styles.cargando}>Cargando...</div>;
   }
 
-  const posicionUsuario = ranking.findIndex((fila) => fila.nombre === usuario.nombre);
-  const mejorPuntaje = historial.reduce((mejor, partida) => Math.max(mejor, Number(partida.puntaje) || 0), 0);
+  let posicionUsuario = -1;
+  for (let i = 0; i < ranking.length; i++) {
+    if (ranking[i].nombre === usuario.nombre) {
+      posicionUsuario = i;
+      break;
+    }
+  }
+
+  let mejorPuntaje = 0;
+  for (const partida of historial) {
+    const puntaje = Number(partida.puntaje) || 0;
+    if (puntaje > mejorPuntaje) {
+      mejorPuntaje = puntaje;
+    }
+  }
 
   return (
     <div>

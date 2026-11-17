@@ -2,44 +2,42 @@ import { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import { API_URL } from "@/lib/api";
 
-function usuarioGuardado() {
-  try {
-    return JSON.parse(localStorage.getItem("usuario"));
-  } catch {
-    return null;
-  }
-}
-
-function useSocket({ serverUrl = API_URL, options = {} } = {}) {
-  const [socket] = useState(() =>
-    io(serverUrl, {
-      autoConnect: false,
-      auth: (enviar) => enviar({ usuarioId: usuarioGuardado()?.id }),
-      ...options,
-    })
-  );
+function useSocket() {
+  const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    const onConnect = () => {
+    let usuario = null;
+    try {
+      usuario = JSON.parse(localStorage.getItem("usuario"));
+    } catch {
+      usuario = null;
+    }
+
+    const nuevaConexion = io(API_URL, {
+      auth: { usuarioId: usuario ? usuario.id : null },
+    });
+
+    function alConectar() {
       setIsConnected(true);
-      console.log("WebSocket conectado:", socket.id);
-    };
-    const onDisconnect = () => {
+      console.log("WebSocket conectado.");
+    }
+
+    function alDesconectar() {
       setIsConnected(false);
-      console.log("WebSocket desconectado");
-    };
+      console.log("WebSocket desconectado.");
+    }
 
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-    socket.connect();
+    nuevaConexion.on("connect", alConectar);
+    nuevaConexion.on("disconnect", alDesconectar);
+    setSocket(nuevaConexion);
 
-    return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-      socket.disconnect();
+    return function limpiarConexion() {
+      nuevaConexion.off("connect", alConectar);
+      nuevaConexion.off("disconnect", alDesconectar);
+      nuevaConexion.disconnect();
     };
-  }, [socket]);
+  }, []);
 
   return { socket, isConnected };
 }
