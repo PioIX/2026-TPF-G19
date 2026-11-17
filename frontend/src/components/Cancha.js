@@ -7,7 +7,7 @@ export default function Cancha({ formacion, equipo, habilitados = [], onElegir }
     <div className={styles.cancha}>
       {formacion.map((puesto) => {
         const jugador = equipo.find((elegido) => elegido.numero === puesto.numero);
-        const habilitado = habilitados.includes(puesto.numero);
+        const habilitado = habilitados.some((numero) => numero === puesto.numero);
 
         return (
           <button

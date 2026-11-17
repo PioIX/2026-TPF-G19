@@ -21,7 +21,6 @@ function responderError(res, err) {
   res.status(500).json({ error: "Error del servidor" });
 }
 
-/* ---------- Selecciones ---------- */
 router.get("/selecciones", async (req, res) => {
   try {
     res.json(await query("SELECT * FROM Selecciones ORDER BY nombre"));
@@ -70,7 +69,6 @@ router.delete("/selecciones/:id", async (req, res) => {
   }
 });
 
-/* ---------- Mundiales ---------- */
 router.get("/mundiales", async (req, res) => {
   try {
     res.json(await query("SELECT * FROM Mundiales ORDER BY anio DESC"));
@@ -115,7 +113,6 @@ router.delete("/mundiales/:id", async (req, res) => {
 });
 
 
-/* ---------- Jugadores ---------- */
 router.get("/jugadores", async (req, res) => {
   try {
     res.json(await query("SELECT * FROM Jugadores ORDER BY nombre"));
@@ -155,7 +152,6 @@ router.delete("/jugadores/:id", async (req, res) => {
   }
 });
 
-/* ---------- Plantillas (selección + mundial) ---------- */
 router.get("/plantillas", async (req, res) => {
   try {
     res.json(
@@ -210,7 +206,6 @@ router.delete("/plantillas/:id", async (req, res) => {
   }
 });
 
-/* ---------- Jugadores de una plantilla ---------- */
 router.get("/plantillas/:id/jugadores", async (req, res) => {
   try {
     res.json(
@@ -232,7 +227,7 @@ router.get("/plantillas/:id/jugadores", async (req, res) => {
 router.post("/plantillas/:id/jugadores", async (req, res) => {
   try {
     const { jugador_id, posicion, valoracion } = req.body;
-    if (!jugador_id || !POSICIONES.includes(posicion) || !(valoracion >= 1 && valoracion <= 99)) {
+    if (!jugador_id || !POSICIONES.some((item) => item === posicion) || !(valoracion >= 1 && valoracion <= 99)) {
       return res.status(400).json({ error: "Jugador, posición (POR/DEF/MED/DEL) y valoración (1-99) son obligatorios" });
     }
     const existe = await query(
@@ -253,7 +248,7 @@ router.post("/plantillas/:id/jugadores", async (req, res) => {
 router.put("/plantilla-jugadores/:id", async (req, res) => {
   try {
     const { posicion, valoracion } = req.body;
-    if (!POSICIONES.includes(posicion) || !(valoracion >= 1 && valoracion <= 99)) {
+    if (!POSICIONES.some((item) => item === posicion) || !(valoracion >= 1 && valoracion <= 99)) {
       return res.status(400).json({ error: "Posición o valoración inválida" });
     }
     await query("UPDATE PlantillaJugadores SET posicion = ?, valoracion = ? WHERE id = ?", [

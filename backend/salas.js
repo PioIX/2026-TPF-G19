@@ -3,18 +3,24 @@ import { FORMACION, simularPartido } from "./modulos/simulacion.js";
 
 const MAX_JUGADORES = 2;
 const LETRAS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-const ORDEN_POSICION = { POR: 0, DEF: 1, MED: 2, DEL: 3 };
 const ESPERA_RECONEXION_MS = 5 * 60 * 1000;
 
-const salas = new Map();
+let salas = [];
 let io = null;
 
 
 function generarCodigo() {
-  let codigo;
-  do {
-    codigo = Array.from({ length: 5 }, () => LETRAS[Math.floor(Math.random() * LETRAS.length)]).join("");
-  } while (salas.has(codigo));
+  let codigo = "";
+  let repetido = true;
+
+  while (repetido) {
+    codigo = "";
+    for (let i = 0; i < 5; i++) {
+      const indice = Math.floor(Math.random() * LETRAS.length);
+      codigo += LETRAS[indice];
+    }
+    repetido = salas.some((sala) => sala.codigo === codigo);
+  }
   return codigo;
 }
 
@@ -26,12 +32,6 @@ function mezclar(lista) {
   return lista;
 }
 
-function leer(args) {
-  const cb = args.find((a) => typeof a === "function");
-  const datos = args.find((a) => a && typeof a === "object") || {};
-  return [datos, cb];
-}
-
 function responder(cb, datos) {
   if (typeof cb === "function") cb(datos);
 }
@@ -41,7 +41,7 @@ function fallo(cb, mensaje) {
 }
 
 function salaDeUsuario(usuarioId) {
-  for (const sala of salas.values()) {
+  for (const sala of salas) {
     if (sala.jugadores.some((jugador) => jugador.id === usuarioId)) return sala;
   }
   return null;
@@ -55,7 +55,7 @@ function puestosLibres(jugador) {
 
 function esElegible(jugador, item) {
   return (
-    puestosLibres(jugador).includes(item.posicion) &&
+    puestosLibres(jugador).some((posicion) => posicion === item.posicion) &&
     !jugador.equipo.some((elegido) => elegido.jugador_id === item.jugador_id)
   );
 }
@@ -66,7 +66,7 @@ function pendiente(jugador) {
 
 function cerrarSala(sala) {
   clearTimeout(sala.limpieza);
-  salas.delete(sala.codigo);
+  salas = salas.filter((item) => item.codigo !== sala.codigo);
 }
 
 function programarLimpieza(sala) {
@@ -75,7 +75,7 @@ function programarLimpieza(sala) {
   sala.limpieza = setTimeout(() => {
     if (!sala.jugadores.some((jugador) => jugador.conectado)) cerrarSala(sala);
   }, ESPERA_RECONEXION_MS);
-  sala.limpieza.unref?.();
+  if (sala.limpieza.unref) sala.limpieza.unref();
 }
 
 
@@ -98,13 +98,13 @@ function vista(sala, usuarioId) {
     equipo: yo ? yo.equipo : [],
     yaElegi: yo ? yo.eligio || !pendiente(yo) : false,
     sinOpciones: yo ? yo.sinOpciones && yo.equipo.length < FORMACION.length : false,
-      sorteo:
+    sorteo:
       yo && yo.sorteo
         ? {
-            seleccion: yo.sorteo.seleccion,
-            anio: yo.sorteo.anio,
-            jugadores: yo.sorteo.jugadores.map((item) => ({ ...item, elegible: esElegible(yo, item) })),
-          }
+          seleccion: yo.sorteo.seleccion,
+          anio: yo.sorteo.anio,
+          jugadores: yo.sorteo.jugadores.map((item) => ({ ...item, elegible: esElegible(yo, item) })),
+        }
         : null,
     resultado: sala.resultado,
   };
@@ -126,15 +126,19 @@ async function sortearRonda(sala) {
      JOIN Jugadores ON Jugadores.id = PlantillaJugadores.jugador_id
      JOIN Plantillas ON Plantillas.id = PlantillaJugadores.plantilla_id
      JOIN Selecciones ON Selecciones.id = Plantillas.seleccion_id
-     JOIN Mundiales ON Mundiales.id = Plantillas.mundial_id`
+     JOIN Mundiales ON Mundiales.id = Plantillas.mundial_id
+     ORDER BY FIELD(PlantillaJugadores.posicion, 'POR', 'DEF', 'MED', 'DEL'),
+              PlantillaJugadores.valoracion DESC`
   );
 
-  const porPlantilla = new Map();
+  const porPlantilla = [];
   for (const fila of filas) {
-    if (!porPlantilla.has(fila.plantilla_id)) {
-      porPlantilla.set(fila.plantilla_id, { id: fila.plantilla_id, seleccion: fila.seleccion, anio: fila.anio, jugadores: [] });
+    let plantilla = porPlantilla.find((item) => item.id === fila.plantilla_id);
+    if (!plantilla) {
+      plantilla = { id: fila.plantilla_id, seleccion: fila.seleccion, anio: fila.anio, jugadores: [] };
+      porPlantilla.push(plantilla);
     }
-    porPlantilla.get(fila.plantilla_id).jugadores.push({
+    plantilla.jugadores.push({
       id: fila.id,
       jugador_id: fila.jugador_id,
       posicion: fila.posicion,
@@ -143,29 +147,32 @@ async function sortearRonda(sala) {
     });
   }
 
-    const activos = sala.jugadores.filter((jugador) => jugador.equipo.length < FORMACION.length);
-  const asignadas = new Set();
+  const activos = sala.jugadores.filter((jugador) => jugador.equipo.length < FORMACION.length);
+  const asignadas = [];
   let alguien = false;
 
   for (const jugador of mezclar([...sala.jugadores])) {
     jugador.sorteo = null;
     jugador.sinOpciones = false;
-    if (!activos.includes(jugador)) {
+    if (!activos.some((activo) => activo === jugador)) {
       jugador.sinOpciones = true;
       continue;
     }
 
-    const ids = mezclar([...porPlantilla.keys()]);
-    const sirven = ids.filter((id) => porPlantilla.get(id).jugadores.some((item) => esElegible(jugador, item)));
-    const elegidaId = sirven.find((id) => !asignadas.has(id)) ?? sirven[0];
+    const plantillasMezcladas = mezclar(porPlantilla.slice());
+    const sirven = plantillasMezcladas.filter((plantilla) =>
+      plantilla.jugadores.some((item) => esElegible(jugador, item))
+    );
+    let elegida = sirven.find((plantilla) => !asignadas.some((id) => id === plantilla.id));
+    if (!elegida) elegida = sirven[0];
 
-    if (elegidaId === undefined) {
+    if (!elegida) {
       jugador.sinOpciones = true;
-      jugador.sorteo = armarSorteo(porPlantilla.get(ids[0]));
+      jugador.sorteo = porPlantilla.length > 0 ? armarSorteo(porPlantilla[0]) : null;
       continue;
     }
-    asignadas.add(elegidaId);
-    jugador.sorteo = armarSorteo(porPlantilla.get(elegidaId));
+    asignadas.push(elegida.id);
+    jugador.sorteo = armarSorteo(elegida);
     alguien = true;
   }
   if (!alguien) return false;
@@ -176,10 +183,12 @@ async function sortearRonda(sala) {
 }
 
 function armarSorteo(plantilla) {
-  const jugadores = [...plantilla.jugadores].sort(
-    (a, b) => ORDEN_POSICION[a.posicion] - ORDEN_POSICION[b.posicion] || b.valoracion - a.valoracion
-  );
-  return { plantillaId: plantilla.id, seleccion: plantilla.seleccion, anio: plantilla.anio, jugadores };
+  return {
+    plantillaId: plantilla.id,
+    seleccion: plantilla.seleccion,
+    anio: plantilla.anio,
+    jugadores: plantilla.jugadores,
+  };
 }
 
 function terminar(sala) {
@@ -230,9 +239,9 @@ function reiniciarSala(sala) {
 }
 
 function quitarJugador(sala, usuarioId) {
-  const indice = sala.jugadores.findIndex((jugador) => jugador.id === usuarioId);
-  if (indice === -1) return;
-  const [saliente] = sala.jugadores.splice(indice, 1);
+  const saliente = sala.jugadores.find((jugador) => jugador.id === usuarioId);
+  if (!saliente) return;
+  sala.jugadores = sala.jugadores.filter((jugador) => jugador.id !== usuarioId);
 
   if (sala.jugadores.length === 0) {
     cerrarSala(sala);
@@ -263,8 +272,7 @@ export function registrarSalas(servidorIo) {
       emitir(salaPrevia);
     }
 
-    socket.on("sala:crear", (...args) => {
-      const [, cb] = leer(args);
+    socket.on("sala:crear", (datos, cb) => {
       const existente = salaDeUsuario(usuario.id);
       if (existente) {
         if (existente.estado !== "fin") return fallo(cb, `Ya estás en la sala ${existente.codigo}`);
@@ -284,14 +292,13 @@ export function registrarSalas(servidorIo) {
           { id: usuario.id, nombre: usuario.nombre, socketId: socket.id, conectado: true, equipo: [], eligio: false, sinOpciones: false },
         ],
       };
-      salas.set(sala.codigo, sala);
+      salas.push(sala);
       responder(cb, { sala: vista(sala, usuario.id) });
     });
 
-    socket.on("sala:unirse", (...args) => {
-      const [datos, cb] = leer(args);
+    socket.on("sala:unirse", (datos, cb) => {
       const codigo = String(datos.codigo || "").trim().toUpperCase();
-      const sala = salas.get(codigo);
+      const sala = salas.find((item) => item.codigo === codigo);
 
       if (!sala) return fallo(cb, "No existe una sala con ese código");
       const existente = salaDeUsuario(usuario.id);
@@ -319,8 +326,7 @@ export function registrarSalas(servidorIo) {
       responder(cb, { sala: vista(sala, usuario.id) });
     });
 
-    socket.on("sala:iniciar", async (...args) => {
-      const [, cb] = leer(args);
+    socket.on("sala:iniciar", async (datos, cb) => {
       try {
         const sala = salaDeUsuario(usuario.id);
         if (!sala) return fallo(cb, "No estás en ninguna sala");
@@ -346,8 +352,7 @@ export function registrarSalas(servidorIo) {
       }
     });
 
-    socket.on("sala:elegir", async (...args) => {
-      const [datos, cb] = leer(args);
+    socket.on("sala:elegir", async (datos, cb) => {
       try {
         const sala = salaDeUsuario(usuario.id);
         if (!sala || sala.estado !== "draft" || sala.avanzando) return fallo(cb, "No hay una ronda en curso");
@@ -393,8 +398,7 @@ export function registrarSalas(servidorIo) {
       }
     });
 
-    socket.on("sala:volver", (...args) => {
-      const [, cb] = leer(args);
+    socket.on("sala:volver", (datos, cb) => {
       const sala = salaDeUsuario(usuario.id);
       if (!sala) return fallo(cb, "No estás en ninguna sala");
       if (sala.estado === "fin") {
@@ -404,8 +408,7 @@ export function registrarSalas(servidorIo) {
       responder(cb, { ok: true });
     });
 
-    socket.on("sala:salir", (...args) => {
-      const [, cb] = leer(args);
+    socket.on("sala:salir", (datos, cb) => {
       const sala = salaDeUsuario(usuario.id);
       if (sala) quitarJugador(sala, usuario.id);
       responder(cb, { sala: null });
@@ -415,7 +418,6 @@ export function registrarSalas(servidorIo) {
       const sala = salaDeUsuario(usuario.id);
       if (!sala) return;
       const jugador = sala.jugadores.find((item) => item.id === usuario.id);
-      // Si ya se reconectó con otro socket, este desconectado no importa
       if (!jugador || jugador.socketId !== socket.id) return;
       jugador.conectado = false;
       jugador.socketId = null;

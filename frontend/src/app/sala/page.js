@@ -54,7 +54,11 @@ function Espera({ sala, enviar, salir }) {
         <span className={styles.codigoEtiqueta}>CÓDIGO DE INVITACIÓN</span>
         <div className={styles.codigoCaja}>
           <span className={styles.codigo}>{sala.codigo}</span>
-          <Button chico variante="secundario" onClick={() => navigator.clipboard?.writeText(sala.codigo)}>
+          <Button chico variante="secundario" onClick={() => {
+            if (navigator.clipboard) {
+              navigator.clipboard.writeText(sala.codigo);
+            }
+          }}>
             Copiar código
           </Button>
         </div>
@@ -212,7 +216,7 @@ function Resultado({ sala }) {
         {resultado.marcador.map((lado) => (
           <div key={lado.id}>
             <h3 className={draft.centrado}>{lado.id === sala.yoId ? "Tu equipo" : `Equipo de ${lado.nombre}`}</h3>
-            <Cancha formacion={sala.formacion} equipo={resultado.equipos[lado.id]} onElegir={() => {}} />
+            <Cancha formacion={sala.formacion} equipo={resultado.equipos[lado.id]} onElegir={() => { }} />
           </div>
         ))}
       </div>
@@ -246,6 +250,8 @@ export default function SalaPage() {
   const [elegidoId, setElegidoId] = useState(null);
 
   useEffect(() => {
+    if (!socket) return;
+
     const alEstado = (nuevoEstado) => setSala(nuevoEstado);
     const alFallarConexion = (e) => {
       setError(
@@ -264,6 +270,7 @@ export default function SalaPage() {
 
   function enviar(evento, datos = {}, alTerminar) {
     setError("");
+    if (!socket) return;
     socket.emit(evento, datos, (respuesta) => {
       if (respuesta && respuesta.error) {
         setError(respuesta.error);

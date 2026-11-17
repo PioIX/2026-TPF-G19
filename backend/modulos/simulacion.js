@@ -19,7 +19,11 @@ const PESO_GOLEADOR = { POR: 0, DEF: 1, MED: 3, DEL: 6 };
 function promedio(jugadores, posicion) {
   const lista = jugadores.filter((jugador) => jugador.posicion === posicion);
   if (lista.length === 0) return 70;
-  return lista.reduce((suma, jugador) => suma + Number(jugador.valoracion), 0) / lista.length;
+  let suma = 0;
+  for (const jugador of lista) {
+    suma += Number(jugador.valoracion);
+  }
+  return suma / lista.length;
 }
 
 function ataque(equipo) {
@@ -47,7 +51,11 @@ function sortearGoles(esperados) {
 
 function elegirGoleador(equipo) {
   const pesos = equipo.map((jugador) => (PESO_GOLEADOR[jugador.posicion] || 0) * Number(jugador.valoracion));
-  let sorteo = Math.random() * pesos.reduce((suma, peso) => suma + peso, 0);
+  let totalPesos = 0;
+  for (const peso of pesos) {
+    totalPesos += peso;
+  }
+  let sorteo = Math.random() * totalPesos;
   for (let i = 0; i < equipo.length; i++) {
     sorteo -= pesos[i];
     if (sorteo <= 0) return equipo[i];
@@ -56,7 +64,11 @@ function elegirGoleador(equipo) {
 }
 
 function promedioGeneral(equipo) {
-  return equipo.reduce((suma, jugador) => suma + Number(jugador.valoracion), 0) / equipo.length;
+  let suma = 0;
+  for (const jugador of equipo) {
+    suma += Number(jugador.valoracion);
+  }
+  return suma / equipo.length;
 }
 
 export function simularPartido(equipo, rival) {

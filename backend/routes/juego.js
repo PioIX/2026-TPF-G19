@@ -25,27 +25,28 @@ async function sortear(partidaId) {
   const equipo = await equipoDePartida(partidaId);
   const puestosOcupados = equipo.map((elegido) => elegido.numero);
   const jugadoresUsados = equipo.map((elegido) => elegido.jugador_id);
-  const posicionesLibres = FORMACION.filter((puesto) => !puestosOcupados.includes(puesto.numero)).map(
+  const posicionesLibres = FORMACION.filter((puesto) => !puestosOcupados.some((numero) => numero === puesto.numero)).map(
     (puesto) => puesto.posicion
   );
 
-  
+
   if (posicionesLibres.length === 0) {
     await query("UPDATE Partidas SET plantilla_sorteada_id = NULL WHERE id = ?", [partidaId]);
     return;
   }
 
-  const plantillas = await query("SELECT id FROM Plantillas");
+  let plantillas = await query("SELECT id FROM Plantillas");
   while (plantillas.length > 0) {
     const posicion = Math.floor(Math.random() * plantillas.length);
-    const plantilla = plantillas.splice(posicion, 1)[0];
+    const plantilla = plantillas[posicion];
+    plantillas = plantillas.filter((item, indice) => indice !== posicion);
 
     const jugadores = await query(
       "SELECT jugador_id, posicion FROM PlantillaJugadores WHERE plantilla_id = ?",
       [plantilla.id]
     );
     const sirve = jugadores.some(
-      (jugador) => posicionesLibres.includes(jugador.posicion) && !jugadoresUsados.includes(jugador.jugador_id)
+      (jugador) => posicionesLibres.some((posicion) => posicion === jugador.posicion) && !jugadoresUsados.some((id) => id === jugador.jugador_id)
     );
 
     if (sirve) {
@@ -87,10 +88,10 @@ async function armarEstado(partidaId) {
       (puesto) => !equipo.some((elegido) => elegido.numero === puesto.numero)
     ).map((puesto) => puesto.posicion);
 
-   
+
     sorteo = jugadores.map((jugador) => ({
       ...jugador,
-      elegible: posicionesLibres.includes(jugador.posicion) && !jugadoresUsados.includes(jugador.jugador_id),
+      elegible: posicionesLibres.some((posicion) => posicion === jugador.posicion) && !jugadoresUsados.some((id) => id === jugador.jugador_id),
     }));
   }
 
@@ -148,7 +149,7 @@ router.post("/partidas/:id/elegir", identificarUsuario, async (req, res) => {
       return res.status(404).json({ error: "Partida no encontrada" });
     }
 
-   
+
     const jugadores = await query("SELECT * FROM PlantillaJugadores WHERE id = ? AND plantilla_id = ?", [
       plantillaJugadorId,
       partidas[0].plantilla_sorteada_id,
@@ -203,7 +204,7 @@ router.post("/partidas/:id/simular", identificarUsuario, async (req, res) => {
       return res.status(400).json({ error: "Tenés que completar los 11 puestos" });
     }
 
-   
+
     const plantillas = await query(
       `SELECT Plantillas.id, Selecciones.nombre AS seleccion, Mundiales.anio
        FROM Plantillas
@@ -223,14 +224,15 @@ router.post("/partidas/:id/simular", identificarUsuario, async (req, res) => {
       }
       jugadoresPorPlantilla[jugador.plantilla_id].push(jugador);
     });
-    const posiblesRivales = plantillas.filter((plantilla) => (jugadoresPorPlantilla[plantilla.id] || []).length >= 11);
+    let posiblesRivales = plantillas.filter((plantilla) => (jugadoresPorPlantilla[plantilla.id] || []).length >= 11);
 
-  
+
     const rondas = [];
     const golesPorJugador = {};
     for (const fase of FASES) {
       const posicion = Math.floor(Math.random() * posiblesRivales.length);
-      const rival = posiblesRivales.splice(posicion, 1)[0];
+      const rival = posiblesRivales[posicion];
+      posiblesRivales = posiblesRivales.filter((plantilla, indice) => indice !== posicion);
       const partido = simularPartido(equipo, jugadoresPorPlantilla[rival.id]);
 
       partido.goleadoresFavor.forEach((goleador) => {
@@ -257,7 +259,7 @@ router.post("/partidas/:id/simular", identificarUsuario, async (req, res) => {
     const faseFinal = campeon ? "Campeón" : ultimaRonda.fase;
     const puntaje = calcularPuntaje(rondas);
 
-    
+
     for (const plantillaJugadorId of Object.keys(golesPorJugador)) {
       await query(
         "UPDATE PartidaJugadores SET goles = ? WHERE partida_id = ? AND plantilla_jugador_id = ?",
@@ -270,7 +272,7 @@ router.post("/partidas/:id/simular", identificarUsuario, async (req, res) => {
       [ultimaRonda.rival.id, faseFinal, ultimaRonda.golesFavor, ultimaRonda.golesContra, puntaje, partidaId]
     );
 
- 
+
     req.app.get("io").emit("ranking:actualizado", {
       nombre: req.usuario.nombre,
       puntaje: puntaje,
