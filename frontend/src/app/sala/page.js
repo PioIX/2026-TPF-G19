@@ -13,38 +13,31 @@ import useSocket from "@/hooks/useSocket";
 
 function Lobby({ codigo, setCodigo, isConnected, enviar }) {
   return (
-    <div className="tarjeta">
-      <h2>Jugar online</h2>
-      <p>
-        Armá tu once contra un amigo: los dos reciben el mismo sorteo en cada ronda y, al completar los 11, el servidor
-        simula un partido entre los dos equipos.
-      </p>
-      <div className={draft.acciones}>
-        <Button onClick={() => enviar("sala:crear")} disabled={!isConnected}>
-          Crear sala
-        </Button>
+    <div className={clsx("tarjeta", styles.lobby)}>
+      <div className={styles.lobbyIntro}>
+        <span className={styles.introEtiqueta}><span /> MULTIJUGADOR · EN VIVO</span>
+        <h1>EL CLÁSICO <span>SE JUEGA</span></h1>
+        <p>Vos y tu rival reciben el mismo sorteo. Armen sus 11 leyendas y que la cancha decida quién se queda con la victoria.</p>
+        <div className={styles.versus} aria-hidden="true"><span>VOS</span><b>VS</b><span>RIVAL</span></div>
       </div>
-      <p className={styles.separador}>o entrá con el código que te pasó tu rival</p>
-      <form
-        className={styles.formUnirse}
-        onSubmit={(evento) => {
-          evento.preventDefault();
-          enviar("sala:unirse", { codigo });
-        }}
-      >
-        <input
-          className={styles.entrada}
-          value={codigo}
-          onChange={(e) => setCodigo(e.target.value)}
-          placeholder="CÓDIGO"
-          maxLength={5}
-          aria-label="Código de sala"
-        />
-        <Button type="submit" variante="secundario" disabled={!isConnected || !codigo.trim()}>
-          Unirme
-        </Button>
-      </form>
-      <p className={styles.estadoConexion}>{isConnected ? "🟢 Conectado al servidor" : "🔴 Conectando..."}</p>
+      <div className={styles.lobbyJugar}>
+        <div className={styles.lobbyCrear}>
+          <span className={styles.numeroPaso}>01 / DESAFIÁ</span>
+          <h2>Creá una sala</h2>
+          <p>Invitá a un amigo y empezá un duelo nuevo.</p>
+          <Button onClick={() => enviar("sala:crear")} disabled={!isConnected}>Crear sala <span aria-hidden="true"> →</span></Button>
+        </div>
+        <div className={styles.lobbyUnirse}>
+          <span className={styles.numeroPaso}>02 / SUMATE</span>
+          <h2>¿Tenés un código?</h2>
+          <p>Ingresá el código que te pasó tu rival.</p>
+          <form className={styles.formUnirse} onSubmit={(evento) => { evento.preventDefault(); enviar("sala:unirse", { codigo }); }}>
+            <input className={styles.entrada} value={codigo} onChange={(e) => setCodigo(e.target.value.toUpperCase())} placeholder="XXXXX" maxLength={5} aria-label="Código de sala" />
+            <Button type="submit" variante="secundario" disabled={!isConnected || !codigo.trim()}>Unirme</Button>
+          </form>
+        </div>
+        <p className={styles.estadoConexion}><span className={isConnected ? styles.conectado : styles.desconectado} />{isConnected ? "Servidor conectado · listo para jugar" : "Conectando con el servidor..."}</p>
+      </div>
     </div>
   );
 }
@@ -54,14 +47,18 @@ function Espera({ sala, enviar, salir }) {
   const completa = sala.jugadores.length === 2 && sala.jugadores.every((jugador) => jugador.conectado);
 
   return (
-    <div className="tarjeta">
+    <div className={clsx("tarjeta", styles.tarjetaSala)}>
       <h2>Sala de espera</h2>
-      <p>Pasale este código a tu rival:</p>
-      <div className={styles.codigoCaja}>
-        <span className={styles.codigo}>{sala.codigo}</span>
-        <Button chico variante="secundario" onClick={() => navigator.clipboard?.writeText(sala.codigo)}>
-          Copiar
-        </Button>
+      <p>Tu cancha está lista. Compartí el código para que se sume tu rival.</p>
+      <div className={styles.codigoPanel}>
+        <span className={styles.codigoEtiqueta}>CÓDIGO DE INVITACIÓN</span>
+        <div className={styles.codigoCaja}>
+          <span className={styles.codigo}>{sala.codigo}</span>
+          <Button chico variante="secundario" onClick={() => navigator.clipboard?.writeText(sala.codigo)}>
+            Copiar código
+          </Button>
+        </div>
+        <span className={styles.codigoAyuda}>Pasáselo a tu amigo para que entre a la sala</span>
       </div>
       {sala.jugadores.map((jugador) => (
         <div key={jugador.id} className={styles.fila}>

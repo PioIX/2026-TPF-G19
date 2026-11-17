@@ -10,6 +10,12 @@ import Cancha from "@/components/Cancha";
 import useUsuario from "@/hooks/useUsuario";
 import { api } from "@/lib/api";
 
+const POSICIONES_VISUALES = [
+  ["1", 50, 86], ["2", 21, 68], ["3", 41, 72], ["4", 59, 72], ["5", 79, 68],
+  ["6", 31, 47], ["7", 50, 53], ["8", 69, 47],
+  ["9", 22, 24], ["10", 50, 18], ["11", 78, 24],
+];
+
 export default function DraftPage() {
   const usuario = useUsuario();
   const [estado, setEstado] = useState(null); 
@@ -142,13 +148,25 @@ export default function DraftPage() {
 
      if (!estado) {
       return (
-        <div className="tarjeta">
-          <h2>Draft XI</h2>
-          <p>
-            En cada turno se sortea una selección de un Mundial. Elegí un jugador para un puesto libre de tu
-            4-3-3. Cuando completes los 11, tu equipo juega el torneo desde octavos hasta la final.
-          </p>
-          <Button onClick={nuevaPartida}>Nueva partida</Button>
+        <div className={styles.introDraft}>
+          <div className={styles.introContenido}>
+            <span className={styles.introEtiqueta}><span /> MODO CAMPAÑA · COPA DEL MUNDO</span>
+            <h1 className={styles.introTitulo}>DRAFT <span>XI</span></h1>
+            <p className={styles.introTexto}>Las leyendas están sobre la mesa. Elegí a tus 11, armá un equipo de ensueño y llevalo desde octavos hasta la gloria.</p>
+            <div className={styles.pasos}>
+              <span><b>01</b> Elegí tus jugadores</span>
+              <span><b>02</b> Completá el 4-3-3</span>
+              <span><b>03</b> Ganá el Mundial</span>
+            </div>
+            <Button onClick={nuevaPartida}>Empezar el draft <span aria-hidden="true"> →</span></Button>
+          </div>
+          <div className={styles.canchaIntro} aria-label="Formación táctica 4-3-3">
+            <span className={styles.formacionTag}>FORMACIÓN <b>4—3—3</b></span>
+            <div className={styles.miniCancha}>
+              {POSICIONES_VISUALES.map(([numero, left, top]) => <i key={numero} style={{ left: `${left}%`, top: `${top}%` }}>{numero}</i>)}
+            </div>
+            <span className={styles.canchaPie}>TU EQUIPO. TU HISTORIA.</span>
+          </div>
         </div>
       );
     }

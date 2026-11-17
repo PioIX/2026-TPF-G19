@@ -8,8 +8,8 @@ import Navbar from "@/components/Navbar";
 import useUsuario from "@/hooks/useUsuario";
 
 const OPCIONES = [
-  { href: "/draft", icono: "⚽", titulo: "Jugar", texto: "Armá tu once y avanzá de octavos hasta la final.", destacada: true },
-  { href: "/sala", icono: "🌐", titulo: "Jugar online", texto: "Creá una sala y desafiá a un amigo en tiempo real." },
+  { href: "/draft", icono: "⚽", titulo: "Jugar", texto: "Armá tu once ideal con leyendas del fútbol y ganate el pase a la final.", etiqueta: "MODO CAMPAÑA", detalle: "OCTAVOS · CUARTOS · SEMIS · FINAL", destacada: true },
+  { href: "/sala", icono: "🌐", titulo: "Jugar online", texto: "Invitá a un amigo, armen sus equipos y definan quién manda en la cancha.", etiqueta: "DUELO EN VIVO", detalle: "CREÁ UNA SALA O UNITE CON CÓDIGO", online: true },
   { href: "/ranking", icono: "🏆", titulo: "Ranking", texto: "Mirá quiénes consiguieron los mejores puntajes." },
 ];
 
@@ -32,19 +32,19 @@ export default function Home() {
       <Navbar usuario={usuario} />
       <main className={styles.principal}>
         <section className={styles.cabecera}>
-          <Image src="/logo.svg" alt="" width={72} height={85} priority />
+          <Image src="/logo.svg" alt="" width={58} height={68} priority />
           <h1 className={styles.titulo}>Hola, {usuario.nombre}</h1>
           <p className={styles.subtitulo}>Armá tu once ideal con plantillas históricas de los Mundiales.</p>
         </section>
 
         <section className={styles.acciones}>
           {opciones.map((opcion) => (
-            <Link key={opcion.href} href={opcion.href} className={clsx(styles.opcion, { [styles.destacada]: opcion.destacada })}>
-              <span className={styles.icono} aria-hidden="true">
-                {opcion.icono}
-              </span>
+            <Link key={opcion.href} href={opcion.href} className={clsx(styles.opcion, { [styles.destacada]: opcion.destacada, [styles.online]: opcion.online })}>
+              {opcion.etiqueta && <span className={styles.etiqueta}>{opcion.etiqueta}</span>}
+              <span className={styles.icono} aria-hidden="true">{opcion.icono}</span>
               <span className={styles.opcionTitulo}>{opcion.titulo}</span>
               <span className={styles.opcionTexto}>{opcion.texto}</span>
+              {opcion.detalle && <span className={styles.detalle}>{opcion.detalle}<span aria-hidden="true"> ↗</span></span>}
             </Link>
           ))}
         </section>

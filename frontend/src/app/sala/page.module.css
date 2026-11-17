@@ -1,97 +1,343 @@
-.codigoCaja {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-  margin: 8px 0 16px;
+.lobby {
+    width: min(100%, 1080px);
+    min-height: 460px;
+    margin: 4px auto;
+    padding: clamp(28px, 5vw, 60px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: clamp(28px, 5vw, 64px);
+    background: radial-gradient(ellipse at 15% 15%, rgba(31, 138, 76, .18), transparent 42%), linear-gradient(135deg, rgba(13, 43, 39, .98), rgba(7, 21, 24, .99));
 }
 
-.codigo {
-  font-family: var(--font-titulo), Impact, sans-serif;
-  font-size: 3rem;
-  letter-spacing: 0.25em;
-  color: var(--dorado);
+.lobbyIntro {
+    position: relative;
+    padding: 8px 0;
+}
+
+.introEtiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--celeste);
+    font-size: .7rem;
+    font-weight: 600;
+    letter-spacing: .17em;
+}
+
+.introEtiqueta>span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #5dffad;
+    box-shadow: 0 0 14px #5dffad;
+    animation: estadoVivo 1.8s ease-in-out infinite;
+}
+
+.lobbyIntro h1 {
+    margin: 22px 0 12px;
+    color: var(--hueso);
+    font-size: clamp(3rem, 6vw, 5rem);
+    line-height: .95;
+}
+
+.lobbyIntro h1 span {
+    display: block;
+    color: var(--dorado);
+}
+
+.lobbyIntro>p {
+    max-width: 430px;
+    color: rgba(245, 248, 239, .7);
+    line-height: 1.8;
+}
+
+.versus {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 30px;
+    color: rgba(245, 248, 239, .58);
+    font-size: .68rem;
+    font-weight: 600;
+    letter-spacing: .16em;
+}
+
+.versus b {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(255, 212, 71, .5);
+    border-radius: 50%;
+    color: var(--dorado);
+    background: rgba(255, 212, 71, .08);
+    font-family: var(--font-titulo), Impact, sans-serif;
+    font-size: 1.1rem;
+}
+
+.lobbyJugar {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.lobbyCrear,
+.lobbyUnirse {
+    padding: 22px;
+    border: 1px solid rgba(134, 199, 255, .16);
+    border-radius: 16px;
+    background: rgba(5, 22, 20, .48);
+}
+
+.lobbyCrear {
+    border-color: rgba(255, 212, 71, .27);
+    background: linear-gradient(135deg, rgba(31, 138, 76, .18), rgba(5, 22, 20, .62));
+}
+
+.numeroPaso {
+    color: var(--celeste);
+    font-size: .65rem;
+    font-weight: 600;
+    letter-spacing: .16em;
+}
+
+.lobbyCrear h2,
+.lobbyUnirse h2 {
+    margin: 8px 0 4px;
+    color: var(--hueso);
+    font-size: 1.65rem;
+}
+
+.lobbyCrear p,
+.lobbyUnirse p {
+    margin-bottom: 14px;
+    color: rgba(245, 248, 239, .58);
+    font-size: .83rem;
+    line-height: 1.55;
+}
+
+.lobbyCrear button {
+    width: 100%;
 }
 
 .formUnirse {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 8px;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 9px;
+    margin-top: 0;
 }
 
-.entrada {
-  flex: 1;
-  min-width: 140px;
-  background: var(--cancha);
-  color: var(--hueso);
-  border: 1px solid var(--cesped);
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-family: var(--font-titulo), Impact, sans-serif;
-  font-size: 1.3rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.entrada:focus {
-  outline: none;
-  border-color: var(--dorado);
-}
-
-.separador {
-  margin: 18px 0 6px;
-  opacity: 0.7;
-  font-size: 0.9rem;
-}
-
-.estados {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.chip {
-  background: var(--negro);
-  border: 1px solid var(--cesped);
-  border-radius: var(--radio);
-  padding: 10px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.chip small {
-  opacity: 0.75;
-}
-
-.listo {
-  border-color: var(--dorado);
-}
-
-.fila {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(31, 138, 76, 0.4);
+.formUnirse .entrada {
+    min-width: 0;
 }
 
 .estadoConexion {
-  font-size: 0.85rem;
-  opacity: 0.85;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 2px 3px 0;
+    color: rgba(245, 248, 239, .6);
+    font-size: .78rem;
+}
+
+.conectado,
+.desconectado {
+    width: 8px;
+    height: 8px;
+    flex: none;
+    border-radius: 50%;
+}
+
+.conectado {
+    background: #5dffad;
+    box-shadow: 0 0 12px rgba(93, 255, 173, .7);
+}
+
+.desconectado {
+    background: var(--error);
+    box-shadow: 0 0 12px rgba(255, 98, 104, .5);
+}
+
+@keyframes estadoVivo {
+    50% {
+        box-shadow: 0 0 18px 5px rgba(93, 255, 173, .22);
+    }
+}
+
+.tarjetaSala {
+    width: min(100%, 680px);
+    margin: 4px auto;
+}
+
+.tarjetaSala h2 {
+    margin-bottom: 6px;
+    color: var(--dorado);
+    font-size: 2rem;
+}
+
+.tarjetaSala>p {
+    color: rgba(245, 248, 239, .72);
+    line-height: 1.65;
+}
+
+.codigoPanel {
+    position: relative;
+    overflow: hidden;
+    margin: 22px 0 20px;
+    padding: 20px clamp(16px, 4vw, 28px);
+    border: 1px solid rgba(255, 212, 71, .35);
+    border-radius: 17px;
+    background: radial-gradient(ellipse at 50% 0, rgba(255, 212, 71, .13), transparent 70%), linear-gradient(145deg, rgba(7, 28, 24, .86), rgba(5, 19, 22, .9));
+    text-align: center;
+    box-shadow: inset 0 1px rgba(255, 255, 255, .05), 0 12px 28px rgba(0, 0, 0, .18);
+}
+
+.codigoEtiqueta {
+    display: block;
+    color: var(--celeste);
+    font-size: .68rem;
+    font-weight: 600;
+    letter-spacing: .18em;
+}
+
+.codigoCaja {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    margin: 10px 0 7px;
+}
+
+.codigo {
+    font-family: var(--font-titulo), Impact, sans-serif;
+    font-size: clamp(2.8rem, 9vw, 4.2rem);
+    letter-spacing: .2em;
+    color: var(--dorado);
+    text-shadow: 0 0 28px rgba(255, 212, 71, .32);
+    line-height: 1;
+}
+
+.codigoAyuda {
+    color: rgba(245, 248, 239, .55);
+    font-size: .78rem;
+}
+
+.formUnirse {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.entrada {
+    flex: 1;
+    min-width: 140px;
+    background: rgba(5, 22, 20, .8);
+    color: var(--hueso);
+    border: 1px solid rgba(134, 199, 255, .25);
+    border-radius: 11px;
+    padding: 11px 14px;
+    font-family: var(--font-titulo), Impact, sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+}
+
+.entrada:focus {
+    outline: 2px solid rgba(255, 212, 71, .15);
+    border-color: var(--dorado);
+}
+
+.separador {
+    margin: 22px 0 8px;
+    color: var(--celeste);
+    font-size: .82rem;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+}
+
+.estados {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.chip {
+    background: rgba(5, 22, 20, .55);
+    border: 1px solid rgba(134, 199, 255, .2);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.chip small {
+    color: rgba(245, 248, 239, .6);
+}
+
+.listo {
+    border-color: rgba(255, 212, 71, .65);
+    box-shadow: inset 3px 0 var(--dorado);
+}
+
+.fila {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 11px 2px;
+    border-bottom: 1px solid rgba(134, 199, 255, .12);
+}
+
+.estadoConexion {
+    font-size: .85rem;
+    color: var(--celeste);
 }
 
 .espera {
-  text-align: center;
-  padding: 10px 0 0;
-  opacity: 0.9;
+    text-align: center;
+    padding: 14px 0 0;
+    color: rgba(245, 248, 239, .75);
 }
 
 .ronda {
-  font-family: var(--font-titulo), Impact, sans-serif;
-  color: var(--dorado);
-  font-size: 1.3rem;
-  letter-spacing: 0.06em;
+    font-family: var(--font-titulo), Impact, sans-serif;
+    color: var(--dorado);
+    font-size: 1.4rem;
+    letter-spacing: .08em;
+}
+
+@media (max-width: 520px) {
+    .codigoCaja {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .codigo {
+        letter-spacing: .16em;
+    }
+}
+
+@media (max-width: 760px) {
+    .lobby {
+        grid-template-columns: 1fr;
+        min-height: 0;
+    }
+
+    .lobbyIntro h1 {
+        font-size: clamp(3rem, 14vw, 4.5rem);
+    }
+
+    .versus {
+        margin-top: 18px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .introEtiqueta>span {
+        animation: none;
+    }
 }

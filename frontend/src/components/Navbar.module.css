@@ -1,0 +1,58 @@
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px clamp(16px, 4vw, 40px);
+  background: rgba(7, 20, 21, .86);
+  border-bottom: 1px solid rgba(134, 199, 255, .16);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .18);
+  backdrop-filter: blur(18px);
+}
+
+.izquierda {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border: 1px solid rgba(255, 212, 71, .55);
+  border-radius: 999px;
+  color: var(--dorado);
+  font-size: .85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background .18s, box-shadow .18s;
+}
+
+.volver:hover {
+  background: rgba(255, 212, 71, .1);
+  box-shadow: 0 0 18px rgba(255, 212, 71, .12);
+}
+
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(12px, 2vw, 24px);
+  font-weight: 600;
+}
+
+.menu a {
+  font-size: .9rem;
+}
+
+.nombre {
+  color: var(--dorado);
+  font-size: .9rem;
+}
