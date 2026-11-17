@@ -1,18 +1,26 @@
-
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { io } from "socket.io-client";
+import { API_URL } from "@/lib/api";
 
-export default function useSocket({ serverUrl = "http://localhost:4000", options = {} } = {}) {
-  const [isConnected, setIsConnected] = useState(false);
-  const socketRef = useRef(null);
-
-  if (!socketRef.current) {
-    socketRef.current = io(serverUrl, options);
+function usuarioGuardado() {
+  try {
+    return JSON.parse(localStorage.getItem("usuario"));
+  } catch {
+    return null;
   }
+}
+
+function useSocket({ serverUrl = API_URL, options = {} } = {}) {
+  const [socket] = useState(() =>
+    io(serverUrl, {
+      autoConnect: false,
+      auth: (enviar) => enviar({ usuarioId: usuarioGuardado()?.id }),
+      ...options,
+    })
+  );
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    const socket = socketRef.current;
-    socket.connect(); 
     const onConnect = () => {
       setIsConnected(true);
       console.log("WebSocket conectado:", socket.id);
@@ -24,13 +32,17 @@ export default function useSocket({ serverUrl = "http://localhost:4000", options
 
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
+    socket.connect();
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
-      socket.disconnect(); 
+      socket.disconnect();
     };
-  }, []);
+  }, [socket]);
 
-  return { socket: socketRef.current, isConnected };
+  return { socket, isConnected };
 }
+
+export default useSocket;
+export { useSocket };
