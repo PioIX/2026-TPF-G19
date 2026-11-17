@@ -10,14 +10,19 @@ import { registrarSalas } from "./salas.js";
 
 dotenv.config();
 
-const ORIGENES = (process.env.FRONTEND_URL || "http://localhost:3000").split(",");
+const ORIGENES = (process.env.FRONTEND_URL || "http://localhost:3000,http://localhost:3001")
+  .split(",")
+  .map((origen) => origen.trim());
+const METODOS_CORS = ["GET", "POST", "PUT", "DELETE"];
 
 const app = express();
-app.use(cors({ origin: ORIGENES }));
+app.use(cors({ origin: ORIGENES, methods: METODOS_CORS }));
 app.use(express.json());
 
 const server = createServer(app);
-const io = new Server(server, { cors: { origin: ORIGENES } });
+const io = new Server(server, {
+  cors: { origin: ORIGENES, methods: METODOS_CORS },
+});
 app.set("io", io);
 
 io.use(async (socket, next) => {
@@ -108,4 +113,6 @@ app.use("/admin", rutasAdmin);
 app.use(rutasJuego);
 
 const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => console.log(`Backend escuchando en http://localhost:${PORT}`));
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`Backend escuchando en el puerto ${PORT}`);
+});
