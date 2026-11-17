@@ -22,19 +22,27 @@ export default function AdminPage() {
     <div>
       <Navbar usuario={usuario} />
       <main className={styles.principal}>
-        <h1 className={styles.titulo}>Panel de administración</h1>
+        <header className={styles.cabecera}>
+          <div>
+            <span className={styles.kicker}>DRAFT XI · CONTROL DEL JUEGO</span>
+            <h1 className={styles.titulo}>Centro de <span>administración</span></h1>
+            <p className={styles.bajada}>Gestioná los equipos, los mundiales y las plantillas del torneo.</p>
+          </div>
+          <span className={styles.sello} aria-hidden="true">⚙</span>
+        </header>
 
-        <div className={styles.pestanias}>
-          {PESTANIAS.map((nombrePestania) => (
+        <nav className={styles.pestanias} aria-label="Secciones de administración">
+          {PESTANIAS.map((nombrePestania, indice) => (
             <Button
               key={nombrePestania}
               variante={pestania === nombrePestania ? undefined : "secundario"}
+              className={`${styles.tab} ${pestania === nombrePestania ? styles.tabActiva : ""}`}
               onClick={() => setPestania(nombrePestania)}
             >
-              {nombrePestania}
+              <span className={styles.numeroTab}>0{indice + 1}</span>{nombrePestania}
             </Button>
           ))}
-        </div>
+        </nav>
 
         {pestania === "Selecciones" && (
           <TablaCrud

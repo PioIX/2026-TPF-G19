@@ -1,83 +1,100 @@
 .cancha {
-  position: relative;
-  width: 100%;
-  max-width: 420px;
-  aspect-ratio: 3 / 4;
-  margin: 0 auto 16px;
-  border: 2px solid var(--hueso);
-  border-radius: var(--radio);
-  background: repeating-linear-gradient(to bottom, var(--cesped) 0, var(--cesped) 12.5%, #1a7a42 12.5%, #1a7a42 25%);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    width: 100%;
+    max-width: 460px;
+    aspect-ratio: 3 / 4;
+    margin: 0 auto 20px;
+    border: 2px solid rgba(245, 248, 239, .76);
+    border-radius: 18px;
+    background: repeating-linear-gradient(to bottom, #208653 0, #208653 12.5%, #177447 12.5%, #177447 25%);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, .32), 0 0 30px rgba(31, 138, 76, .16), inset 0 0 45px rgba(0, 0, 0, .13);
 }
 
 .cancha::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  border-top: 2px solid rgba(248, 248, 242, 0.6);
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, transparent 20%, rgba(0, 0, 0, .14));
+}
+
+.cancha::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 29%;
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    border: 2px solid rgba(245, 248, 239, .53);
+    border-radius: 50%;
+    pointer-events: none;
 }
 
 .puesto {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  width: 14%;
-  min-width: 44px;
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: 2px dashed rgba(248, 248, 242, 0.55);
-  background: rgba(14, 26, 36, 0.55);
-  color: var(--hueso);
-  font-family: inherit;
-  font-size: 0.7rem;
-  font-weight: 600;
-  cursor: default;
+    position: absolute;
+    z-index: 1;
+    transform: translate(-50%, -50%);
+    width: 14%;
+    min-width: 44px;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px dashed rgba(245, 248, 239, .62);
+    background: rgba(7, 28, 24, .76);
+    color: var(--hueso);
+    font-size: .7rem;
+    font-weight: 600;
+    box-shadow: 0 5px 16px rgba(0, 0, 0, .25);
 }
 
 .lleno {
-  width: 22%;
-  aspect-ratio: auto;
-  min-height: 44px;
-  padding: 3px;
-  border: 2px solid var(--dorado);
-  border-radius: 10px;
-  background: var(--negro);
+    width: 23%;
+    aspect-ratio: auto;
+    min-height: 48px;
+    padding: 4px;
+    border: 2px solid var(--dorado);
+    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(11, 23, 26, .96), rgba(7, 28, 24, .96));
+    box-shadow: 0 0 20px rgba(255, 212, 71, .24);
 }
 
 .habilitado {
-  cursor: pointer;
-  border-style: solid;
-  border-color: var(--dorado);
-  background: rgba(245, 197, 66, 0.3);
-  animation: pulso 1.2s ease-in-out infinite;
+    cursor: pointer;
+    border-style: solid;
+    border-color: var(--dorado);
+    background: rgba(255, 212, 71, .25);
+    animation: pulso 1.5s ease-in-out infinite;
 }
 
 .contenido {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .nombre {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 0.6rem;
-  line-height: 1.2;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: .62rem;
+    line-height: 1.2;
 }
 
 .valor {
-  font-family: var(--font-titulo), Impact, sans-serif;
-  font-size: 0.95rem;
-  color: var(--dorado);
+    font-family: var(--font-titulo), Impact, sans-serif;
+    font-size: 1rem;
+    color: var(--dorado);
 }
 
 @keyframes pulso {
-  50% {
-    transform: translate(-50%, -50%) scale(1.1);
-  }
+    50% {
+        transform: translate(-50%, -50%) scale(1.075);
+        box-shadow: 0 0 26px rgba(255, 212, 71, .48);
+    }
 }

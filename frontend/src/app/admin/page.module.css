@@ -1,23 +1,110 @@
 .principal {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 24px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: clamp(30px, 5vw, 56px) 20px 72px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.cabecera {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 4px 0 8px;
+}
+
+.kicker {
+    color: var(--celeste);
+    font-size: .67rem;
+    font-weight: 600;
+    letter-spacing: .19em;
 }
 
 .titulo {
-  font-size: 2.2rem;
-  color: var(--dorado);
+    margin-top: 8px;
+    color: var(--hueso);
+    font-size: clamp(2.6rem, 6vw, 4.4rem);
+    line-height: .96;
+    text-shadow: 0 8px 34px rgba(0, 0, 0, .24);
+}
+
+.titulo span {
+    color: var(--dorado);
+}
+
+.bajada {
+    margin-top: 11px;
+    color: rgba(245, 248, 239, .63);
+    font-size: .94rem;
+}
+
+.sello {
+    display: grid;
+    place-items: center;
+    width: 74px;
+    height: 74px;
+    border: 1px solid rgba(255, 212, 71, .26);
+    border-radius: 22px;
+    color: var(--dorado);
+    background: linear-gradient(145deg, rgba(255, 212, 71, .11), rgba(20, 115, 68, .1));
+    box-shadow: 0 0 30px rgba(255, 212, 71, .08);
+    font-size: 2rem;
 }
 
 .pestanias {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    padding: 8px;
+    border: 1px solid rgba(134, 199, 255, .13);
+    border-radius: 16px;
+    background: rgba(5, 22, 20, .42);
+}
+
+.tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 44px;
+}
+
+.tabActiva {
+    box-shadow: 0 7px 22px rgba(8, 90, 51, .26), 0 0 18px rgba(255, 212, 71, .1);
+}
+
+.numeroTab {
+    color: rgba(245, 248, 239, .48);
+    font-size: .62rem;
+    letter-spacing: .08em;
 }
 
 .cargando {
-  padding: 24px;
+    padding: 24px;
+    color: var(--celeste);
+}
+
+@media (max-width:600px) {
+    .principal {
+        padding: 26px 14px 48px;
+    }
+
+    .sello {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        font-size: 1.5rem;
+    }
+
+    .pestanias {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tab {
+        justify-content: center;
+        padding: 9px 10px;
+    }
 }
