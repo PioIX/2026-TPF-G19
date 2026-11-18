@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 0.0.0.0",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -H 0.0.0.0",
     "lint": "eslint",
-    "dev:a": "cross-env NEXT_DIST_DIR=.next-a PORT=3000 next dev",
-    "dev:b": "cross-env NEXT_DIST_DIR=.next-b PORT=3001 next dev"
+    "dev:a": "cross-env NEXT_DIST_DIR=.next-a PORT=3000 next dev -H 0.0.0.0",
+    "dev:b": "cross-env NEXT_DIST_DIR=.next-b PORT=3001 next dev -H 0.0.0.0"
   },
   "dependencies": {
     "clsx": "^2.1.1",
